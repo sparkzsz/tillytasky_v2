@@ -33,7 +33,7 @@ export function toKey(d: Date) {
 
 export function fromKey(key: string) {
   const [y, m, d] = key.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
+  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
 const STORAGE_KEY = "task-tallier.tasks.v1";
