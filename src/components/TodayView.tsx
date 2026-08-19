@@ -64,7 +64,7 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
             <Flame className="size-6 text-tang" />
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            {completed > yesterday ? "You already beat it 🎉" : `${yesterday - completed + 1} to pass it`}
+            {completed > yesterday ? "You already beat it!" : `${yesterday - completed + 1} to pass it`}
           </p>
         </div>
         <div className="card-pop p-5">
