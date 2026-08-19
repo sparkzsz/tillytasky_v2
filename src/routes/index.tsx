@@ -1,24 +1,85 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { OverviewView } from "@/components/OverviewView";
+import { ProgressView } from "@/components/ProgressView";
+import { TodayView } from "@/components/TodayView";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTasks, useTheme } from "@/lib/tally";
+
+const TITLE = "Task Tallier — Count your daily wins";
+const DESCRIPTION =
+  "Tally how many tasks you finish each day, beat yesterday's record, and watch your progress climb with a confetti hit on every checkmark.";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const { tasks, addTask, toggleTask, removeTask } = useTasks();
+  const { theme, toggleTheme } = useTheme();
+  const [tab, setTab] = useState("today");
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-8 sm:py-12">
+      <header className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl leading-none sm:text-5xl">Task Tallier</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Stack checkmarks. Beat yesterday. Repeat.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle color mode"
+          className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
+        >
+          {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+        </button>
+      </header>
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList className="mb-6 h-auto rounded-full border-2 border-foreground bg-card p-1">
+          {[
+            { value: "today", label: "Today" },
+            { value: "overview", label: "Overview" },
+            { value: "progress", label: "Progress" },
+          ].map((t) => (
+            <TabsTrigger
+              key={t.value}
+              value={t.value}
+              className="rounded-full px-4 py-1.5 font-display text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              {t.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value="today">
+          <TodayView
+            tasks={tasks}
+            onAdd={addTask}
+            onToggle={toggleTask}
+            onRemove={removeTask}
+          />
+        </TabsContent>
+        <TabsContent value="overview">
+          <OverviewView tasks={tasks} />
+        </TabsContent>
+        <TabsContent value="progress">
+          <ProgressView tasks={tasks} />
+        </TabsContent>
+      </Tabs>
+    </main>
   );
 }
