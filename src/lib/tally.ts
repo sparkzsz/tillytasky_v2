@@ -90,7 +90,14 @@ export function useTasks() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  return { tasks, hydrated, addTask, toggleTask, removeTask };
+  const updateTask = useCallback(
+    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date">>) => {
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+    },
+    [],
+  );
+
+  return { tasks, hydrated, addTask, toggleTask, removeTask, updateTask };
 }
 
 export function countsByDay(tasks: Task[]) {
@@ -139,7 +146,7 @@ export function useTheme() {
 
 export function fireConfetti() {
   void import("canvas-confetti").then(({ default: confetti }) => {
-    const colors = ["#EF6545", "#F49625", "#F7E9B2", "#037F71", "#EA5E86", "#57B1A8"];
+    const colors = ["#F76F54", "#FBB28B", "#F7E289", "#47B5A8", "#EA5E86", "#DBC0E8", "#A3C1E2"];
     confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 }, colors });
     setTimeout(
       () => confetti({ particleCount: 60, spread: 110, origin: { y: 0.6 }, colors, startVelocity: 35 }),
