@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Check, Flame, Trash2, Trophy } from "lucide-react";
+import { Check, Flame, Pencil, Trash2, Trophy } from "lucide-react";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
+import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   bestRecord,
   CATEGORY_STYLE,
@@ -19,10 +20,12 @@ type Props = {
   onAdd: (title: string, category: Category, date: string) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
+  onUpdate: (id: string, patch: { title: string; category: Category; date: string }) => void;
 };
 
-export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
+export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
+  const [editing, setEditing] = useState<Task | null>(null);
   const today = toKey(new Date());
 
   const todays = useMemo(() => tasks.filter((t) => t.date === today), [tasks, today]);
@@ -83,7 +86,7 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <CategoryFilter active={filter} onChange={setFilter} />
-        <AddTaskDialog dateLabel="today" onAdd={(title, category) => onAdd(title, category, today)} />
+        <AddTaskDialog defaultDate={today} onAdd={onAdd} />
       </div>
 
       <div className="space-y-3">
@@ -129,6 +132,14 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
             </div>
             <button
               type="button"
+              aria-label="Edit task"
+              onClick={() => setEditing(task)}
+              className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Pencil className="size-4" />
+            </button>
+            <button
+              type="button"
               aria-label="Delete task"
               onClick={() => onRemove(task.id)}
               className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -138,6 +149,8 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
           </div>
         ))}
       </div>
+
+      <EditTaskDialog task={editing} onClose={() => setEditing(null)} onSave={onUpdate} />
     </div>
   );
 }

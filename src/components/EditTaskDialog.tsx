@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,68 +8,61 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CATEGORIES, CATEGORY_STYLE, type Category } from "@/lib/tally";
+import { CATEGORIES, CATEGORY_STYLE, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  onAdd: (title: string, category: Category, date: string) => void;
-  defaultDate: string;
+  task: Task | null;
+  onClose: () => void;
+  onSave: (id: string, patch: { title: string; category: Category; date: string }) => void;
 };
 
-export function AddTaskDialog({ onAdd, defaultDate }: Props) {
-  const [open, setOpen] = useState(false);
+export function EditTaskDialog({ task, onClose, onSave }: Props) {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(defaultDate);
+  const [date, setDate] = useState("");
   const [category, setCategory] = useState<Category>(CATEGORIES[0]);
 
-  function submit() {
+  useEffect(() => {
+    if (!task) return;
+    setTitle(task.title);
+    setDate(task.date);
+    setCategory(task.category);
+  }, [task]);
+
+  function save() {
+    if (!task) return;
     const trimmed = title.trim();
     if (!trimmed) return;
-    onAdd(trimmed, category, date || defaultDate);
-    setTitle("");
-    setDate(defaultDate);
-    setOpen(false);
+    onSave(task.id, { title: trimmed, category, date: date || task.date });
+    onClose();
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-        if (v) setDate(defaultDate);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="lg" className="gap-2 border-2 border-foreground font-display shadow-[3px_3px_0_0_var(--color-foreground)]">
-          <Plus className="size-4" /> Add task
-        </Button>
-      </DialogTrigger>
+    <Dialog open={!!task} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="border-2 border-foreground sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl">New task</DialogTitle>
-          <DialogDescription>Add to your till…</DialogDescription>
+          <DialogTitle className="font-display text-2xl">Edit task</DialogTitle>
+          <DialogDescription>Change the title, date or category.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="edit-title">Title</Label>
             <Input
-              id="task-title"
-              autoFocus
+              id="edit-title"
               value={title}
-              placeholder="e.g. Finish reading response"
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") submit();
+                if (e.key === "Enter") save();
               }}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="task-date">Date</Label>
+            <Label htmlFor="edit-date">Date</Label>
             <Input
-              id="task-date"
+              id="edit-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
@@ -97,11 +89,11 @@ export function AddTaskDialog({ onAdd, defaultDate }: Props) {
         </div>
         <DialogFooter>
           <Button
-            onClick={submit}
+            onClick={save}
             disabled={!title.trim()}
             className="border-2 border-foreground font-display"
           >
-            Add it
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,8 +1,15 @@
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { CATEGORY_STYLE, toKey, type Category, type Task } from "@/lib/tally";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CATEGORY_STYLE, fromKey, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -11,6 +18,7 @@ type Props = { tasks: Task[] };
 
 export function OverviewView({ tasks }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
+  const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);

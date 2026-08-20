@@ -20,11 +20,11 @@ export type Task = {
 };
 
 export const CATEGORY_STYLE: Record<Category, { chip: string; dot: string; chart: string }> = {
-  "I 320U": { chip: "bg-tomato text-background", dot: "bg-tomato", chart: "var(--tomato)" },
-  "I 372": { chip: "bg-bali text-background", dot: "bg-bali", chart: "var(--bali)" },
-  "I 320D": { chip: "bg-tang text-foreground", dot: "bg-tang", chart: "var(--tang)" },
-  "ADV 373": { chip: "bg-blush text-background", dot: "bg-blush", chart: "var(--blush)" },
-  "Job Applied": { chip: "bg-bahamas text-background", dot: "bg-bahamas", chart: "var(--bahamas)" },
+  "I 320U": { chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  "I 372": { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
+  "I 320D": { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
+  "ADV 373": { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
+  "Job Applied": { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
 };
 
 export function toKey(d: Date) {
@@ -90,7 +90,14 @@ export function useTasks() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  return { tasks, hydrated, addTask, toggleTask, removeTask };
+  const updateTask = useCallback(
+    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date">>) => {
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+    },
+    [],
+  );
+
+  return { tasks, hydrated, addTask, toggleTask, removeTask, updateTask };
 }
 
 export function countsByDay(tasks: Task[]) {
@@ -139,7 +146,7 @@ export function useTheme() {
 
 export function fireConfetti() {
   void import("canvas-confetti").then(({ default: confetti }) => {
-    const colors = ["#EF6545", "#F49625", "#F7E9B2", "#037F71", "#EA5E86", "#57B1A8"];
+    const colors = ["#F76F54", "#FBB28B", "#F7E289", "#47B5A8", "#EA5E86", "#DBC0E8", "#A3C1E2"];
     confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 }, colors });
     setTimeout(
       () => confetti({ particleCount: 60, spread: 110, origin: { y: 0.6 }, colors, startVelocity: 35 }),
