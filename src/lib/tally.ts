@@ -20,11 +20,11 @@ export type Task = {
 };
 
 export const CATEGORY_STYLE: Record<Category, { chip: string; dot: string; chart: string }> = {
-  "I 320U": { chip: "bg-tomato text-background", dot: "bg-tomato", chart: "var(--tomato)" },
-  "I 372": { chip: "bg-bali text-background", dot: "bg-bali", chart: "var(--bali)" },
-  "I 320D": { chip: "bg-tang text-foreground", dot: "bg-tang", chart: "var(--tang)" },
-  "ADV 373": { chip: "bg-blush text-background", dot: "bg-blush", chart: "var(--blush)" },
-  "Job Applied": { chip: "bg-bahamas text-background", dot: "bg-bahamas", chart: "var(--bahamas)" },
+  "I 320U": { chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  "I 372": { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
+  "I 320D": { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
+  "ADV 373": { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
+  "Job Applied": { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
 };
 
 export function toKey(d: Date) {
