@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Check, Flame, Trash2, Trophy } from "lucide-react";
+import { Check, Flame, Pencil, Trash2, Trophy } from "lucide-react";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
+import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   bestRecord,
   CATEGORY_STYLE,
@@ -19,10 +20,12 @@ type Props = {
   onAdd: (title: string, category: Category, date: string) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
+  onUpdate: (id: string, patch: { title: string; category: Category; date: string }) => void;
 };
 
-export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
+export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
+  const [editing, setEditing] = useState<Task | null>(null);
   const today = toKey(new Date());
 
   const todays = useMemo(() => tasks.filter((t) => t.date === today), [tasks, today]);
