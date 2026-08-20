@@ -83,7 +83,7 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove }: Props) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <CategoryFilter active={filter} onChange={setFilter} />
-        <AddTaskDialog dateLabel="today" onAdd={(title, category) => onAdd(title, category, today)} />
+        <AddTaskDialog defaultDate={today} onAdd={onAdd} />
       </div>
 
       <div className="space-y-3">
