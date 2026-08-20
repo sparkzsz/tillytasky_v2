@@ -132,6 +132,14 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
             </div>
             <button
               type="button"
+              aria-label="Edit task"
+              onClick={() => setEditing(task)}
+              className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Pencil className="size-4" />
+            </button>
+            <button
+              type="button"
               aria-label="Delete task"
               onClick={() => onRemove(task.id)}
               className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -141,6 +149,8 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
           </div>
         ))}
       </div>
+
+      <EditTaskDialog task={editing} onClose={() => setEditing(null)} onSave={onUpdate} />
     </div>
   );
 }
