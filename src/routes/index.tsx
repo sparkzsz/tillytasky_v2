@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
+import logoAsset from "@/assets/tillytasky_logo_transparent.png.asset.json";
 import { OverviewView } from "@/components/OverviewView";
 import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
@@ -37,14 +38,21 @@ function Index() {
           <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
           <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till</p>
         </div>
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label="Toggle color mode"
-          className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
-        >
-          {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-        </button>
+        <div className="flex items-start gap-3">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle color mode"
+            className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
+          >
+            {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <img
+            src={logoAsset.url}
+            alt="TillyTasky jar logo"
+            className="h-[76px] w-[76px] shrink-0 object-contain sm:h-[88px] sm:w-[88px]"
+          />
+        </div>
       </header>
 
       <Tabs value={tab} onValueChange={setTab}>

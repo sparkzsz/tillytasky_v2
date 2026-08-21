@@ -1,5 +1,12 @@
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, Pencil, Trash2 } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -80,8 +87,8 @@ export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
                   </button>
                 </th>
               ))}
-              <th className="w-24 p-3 text-right font-display text-xs uppercase tracking-wide">
-                Edit
+              <th className="w-24 p-3 text-right">
+                <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
@@ -131,14 +138,25 @@ export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
                   })}
                 </td>
                 <td className="p-3 text-right">
-                  <button
-                    type="button"
-                    aria-label="Edit task"
-                    onClick={() => setEditing(t)}
-                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <Pencil className="size-4" />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label="Task actions"
+                        className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="border-2 border-foreground">
+                      <DropdownMenuItem onClick={() => setEditing(t)}>
+                        <Pencil className="mr-2 size-4" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onAdd(t.title, t.category, t.date)}>
+                        <Copy className="mr-2 size-4" /> Duplicate
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <button
                     type="button"
                     aria-label="Delete task"

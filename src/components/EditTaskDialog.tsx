@@ -45,7 +45,7 @@ export function EditTaskDialog({ task, onClose, onSave }: Props) {
       <DialogContent className="border-2 border-foreground sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Edit task</DialogTitle>
-          <DialogDescription>Change the title, date or category.</DialogDescription>
+          <DialogDescription className="sr-only">Edit this task</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
