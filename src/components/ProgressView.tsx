@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { CATEGORIES, toKey, type Category, type Task } from "@/lib/tally";
+import { CATEGORIES, CATEGORY_STYLE, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = { tasks: Task[] };
