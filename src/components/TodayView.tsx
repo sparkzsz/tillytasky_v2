@@ -51,7 +51,7 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card-pop p-5">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Today&apos;s tally
+            Today&apos;s Till
           </p>
           <p className="mt-1 font-display text-5xl leading-none text-primary">{completed}</p>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export function TodayView({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
           <div className="card-pop p-8 text-center">
             <p className="font-display text-xl">Nothing here yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Add a task and start stacking checkmarks.
+              Add a task to your till.
             </p>
           </div>
         )}

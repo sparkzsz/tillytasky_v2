@@ -5,7 +5,11 @@ export const CATEGORIES = [
   "I 372",
   "I 320D",
   "ADV 373",
+  "School Misc",
   "Job Applied",
+  "Workout",
+  "Read",
+  "General",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
@@ -24,7 +28,11 @@ export const CATEGORY_STYLE: Record<Category, { chip: string; dot: string; chart
   "I 372": { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
   "I 320D": { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
   "ADV 373": { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
+  "School Misc": { chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
   "Job Applied": { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
+  "Workout": { chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
+  "Read": { chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
+  "General": { chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
 };
 
 export function toKey(d: Date) {
