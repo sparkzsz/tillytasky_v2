@@ -60,7 +60,7 @@ export function AddTaskDialog({ onAdd, defaultDate }: Props) {
               id="task-title"
               autoFocus
               value={title}
-              placeholder="e.g. Finish reading response"
+              placeholder="e.g. Finish notes"
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") submit();
