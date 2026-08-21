@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { CATEGORIES, toKey, type Category, type Task } from "@/lib/tally";
+import { CATEGORIES, CATEGORY_STYLE, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = { tasks: Task[] };
@@ -151,19 +151,37 @@ export function ProgressView({ tasks }: Props) {
         <h2 className="font-display text-xl">By category</h2>
         <div className="mt-4 space-y-3">
           {byCategory.map((b) => (
-            <div key={b.category} className="flex items-center gap-3">
-              <span className="w-24 shrink-0 text-sm font-semibold">{b.category}</span>
+            <button
+              key={b.category}
+              type="button"
+              onClick={() => setFilter(filter === b.category ? "all" : b.category)}
+              className="flex w-full items-center gap-3 text-left"
+            >
+              <span
+                className={cn(
+                  "w-24 shrink-0 rounded-full px-2 py-0.5 text-center text-xs font-semibold transition-colors",
+                  filter === b.category
+                    ? CATEGORY_STYLE[b.category].chip
+                    : "text-foreground",
+                )}
+              >
+                {b.category}
+              </span>
               <div className="h-4 flex-1 overflow-hidden rounded-full border-2 border-foreground bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary transition-all"
-                  style={{ width: `${(b.count / maxCat) * 100}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${(b.count / maxCat) * 100}%`,
+                    background: CATEGORY_STYLE[b.category].chart,
+                  }}
                 />
               </div>
               <span className="w-8 text-right font-display text-sm">{b.count}</span>
-            </div>
+            </button>
           ))}
         </div>
       </div>
+
     </div>
   );
 }
