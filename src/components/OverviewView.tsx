@@ -95,10 +95,12 @@ export function OverviewView({ tasks }: Props) {
             const dayTasks = doneByDay.get(key) ?? [];
             const count = dayTasks.length;
             return (
-              <div
+              <button
                 key={key}
+                type="button"
+                onClick={() => setSelected(key)}
                 className={cn(
-                  "flex min-h-16 flex-col rounded-lg border-2 p-1.5 text-left transition-colors",
+                  "flex min-h-16 flex-col rounded-lg border-2 p-1.5 text-left transition-transform hover:-translate-y-0.5",
                   count > 0 ? "border-foreground bg-secondary" : "border-border bg-transparent",
                   key === todayKey && "ring-2 ring-primary ring-offset-2 ring-offset-card",
                 )}
@@ -120,11 +122,64 @@ export function OverviewView({ tasks }: Props) {
                     </div>
                   </>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
       </div>
+
+      <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">
+              {selected
+                ? fromKey(selected).toLocaleDateString(undefined, {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : ""}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedTasks.length} task{selectedTasks.length === 1 ? "" : "s"} on this day
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {selectedTasks.length === 0 && (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Nothing in your till for this day.
+              </p>
+            )}
+            {selectedTasks.map((t) => (
+              <div
+                key={t.id}
+                className="flex items-center gap-3 rounded-lg border-2 border-foreground p-3"
+              >
+                <span
+                  className={cn(
+                    "grid size-6 shrink-0 place-items-center rounded-full border-2 border-foreground",
+                    t.done ? "bg-accent text-accent-foreground" : "bg-transparent",
+                  )}
+                >
+                  {t.done && <Check className="size-4" />}
+                </span>
+                <span className={cn("min-w-0 flex-1 truncate text-sm font-semibold", t.done && "line-through")}>
+                  {t.title}
+                </span>
+                <span
+                  className={cn(
+                    "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
+                    CATEGORY_STYLE[t.category].chip,
+                  )}
+                >
+                  {t.category}
+                </span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
