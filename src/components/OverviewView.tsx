@@ -50,6 +50,8 @@ export function OverviewView({ tasks }: Props) {
     0,
   );
   const todayKey = toKey(new Date());
+  const selectedTasks = selected ? filtered.filter((t) => t.date === selected) : [];
+
 
   return (
     <div className="space-y-6">
