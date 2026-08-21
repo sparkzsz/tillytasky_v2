@@ -4,11 +4,12 @@ import { Moon, Sun } from "lucide-react";
 
 import { OverviewView } from "@/components/OverviewView";
 import { ProgressView } from "@/components/ProgressView";
+import { TaskTable } from "@/components/TaskTable";
 import { TodayView } from "@/components/TodayView";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTasks, useTheme } from "@/lib/tally";
 
-const TITLE = "Task Tallier — Count your daily wins";
+const TITLE = "TillyTasky — Stack tasks in your till";
 const DESCRIPTION =
   "Tally how many tasks you finish each day, beat yesterday's record, and watch your progress climb with a confetti hit on every checkmark.";
 
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { tasks, addTask, toggleTask, removeTask } = useTasks();
+  const { tasks, addTask, toggleTask, removeTask, updateTask } = useTasks();
   const { theme, toggleTheme } = useTheme();
   const [tab, setTab] = useState("today");
 
@@ -33,10 +34,8 @@ function Index() {
     <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-8 sm:py-12">
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl leading-none sm:text-5xl">Task Tallier</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Stack checkmarks. Beat yesterday. Repeat.
-          </p>
+          <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till</p>
         </div>
         <button
           type="button"
@@ -49,9 +48,10 @@ function Index() {
       </header>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="mb-6 h-auto rounded-full border-2 border-foreground bg-card p-1">
+        <TabsList className="mb-6 h-auto flex-wrap rounded-full border-2 border-foreground bg-card p-1">
           {[
             { value: "today", label: "Today" },
+            { value: "tasks", label: "Tasks" },
             { value: "overview", label: "Overview" },
             { value: "progress", label: "Progress" },
           ].map((t) => (
@@ -71,6 +71,16 @@ function Index() {
             onAdd={addTask}
             onToggle={toggleTask}
             onRemove={removeTask}
+            onUpdate={updateTask}
+          />
+        </TabsContent>
+        <TabsContent value="tasks">
+          <TaskTable
+            tasks={tasks}
+            onAdd={addTask}
+            onToggle={toggleTask}
+            onRemove={removeTask}
+            onUpdate={updateTask}
           />
         </TabsContent>
         <TabsContent value="overview">
@@ -83,3 +93,4 @@ function Index() {
     </main>
   );
 }
+
