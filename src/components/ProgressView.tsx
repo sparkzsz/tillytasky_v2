@@ -20,7 +20,7 @@ const RANGES = [7, 14, 30] as const;
 
 export function ProgressView({ tasks }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
-  const [range, setRange] = useState<(typeof RANGES)[number]>(14);
+  const [range, setRange] = useState<(typeof RANGES)[number]>(7);
 
   const filtered = filter === "all" ? tasks : tasks.filter((t) => t.category === filter);
 

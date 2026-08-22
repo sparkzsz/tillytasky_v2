@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Task Tallier design system — retro-poster palette.
- * Light base: Buttered Corn #F7E9B2 · Dark base: Valentine Chocolate #422F0E
+ * TillyTasky design system — retro-poster palette.
+ * Light base: Daffodil #F7E289 · Dark base: Night Time #252D45
  */
 
 @theme inline {
