@@ -33,12 +33,12 @@ function Index() {
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-8 sm:py-12">
-      <header className="mb-8 flex items-start justify-between gap-4">
-        <div>
+      <header className="mb-6 flex items-stretch justify-between gap-4">
+        <div className="flex flex-col justify-between">
           <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
           <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till</p>
         </div>
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 self-stretch">
           <button
             type="button"
             onClick={toggleTheme}
@@ -50,7 +50,7 @@ function Index() {
           <img
             src={logoAsset.url}
             alt="TillyTasky jar logo"
-            className="h-[76px] w-[76px] shrink-0 object-contain sm:h-[88px] sm:w-[88px]"
+            className="h-full max-h-[104px] w-auto shrink-0 self-stretch object-contain object-right"
           />
         </div>
       </header>
