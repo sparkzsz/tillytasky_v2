@@ -77,10 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Task Tallier" },
-      { name: "description", content: "Count your daily task wins and beat your record." },
-      { property: "og:title", content: "Task Tallier" },
-      { property: "og:description", content: "Count your daily task wins and beat your record." },
+      { title: "TillyTasky" },
+      { name: "description", content: "Stack tasks in your till and beat yesterday's count." },
+      { property: "og:title", content: "TillyTasky" },
+      {
+        property: "og:description",
+        content: "Stack tasks in your till and beat yesterday's count.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
