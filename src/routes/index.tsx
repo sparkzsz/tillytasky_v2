@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Loader2, LogOut, Moon, Sun } from "lucide-react";
 
 import logoAsset from "@/assets/tillytasky_logo_transparent.png.asset.json";
 import { OverviewView } from "@/components/OverviewView";
@@ -8,6 +8,7 @@ import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
 import { TodayView } from "@/components/TodayView";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/lib/auth";
 import { useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till";
@@ -29,7 +30,26 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { tasks, addTask, toggleTask, removeTask, updateTask } = useTasks();
   const { theme, toggleTheme } = useTheme();
+  const { session, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("today");
+
+  useEffect(() => {
+    if (!loading && !session) void navigate({ to: "/login", replace: true });
+  }, [loading, session, navigate]);
+
+  async function handleSignOut() {
+    await signOut();
+    void navigate({ to: "/login", replace: true });
+  }
+
+  if (loading || !session) {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-8 sm:py-12">
@@ -46,6 +66,15 @@ function Index() {
             className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            aria-label="Log out"
+            title="Log out"
+            className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
+          >
+            <LogOut className="size-4" />
           </button>
           <img
             src={logoAsset.url}
