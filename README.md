@@ -1,6 +1,6 @@
 # TillyTasky
 
-This is TillyTasky.
+This is TillyTasky. Stack tasks in your till today.
 
 This project was built with [Lovable](https://lovable.dev).
 
