@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-import logoAsset from "@/assets/tillytasky_logo_transparent.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,7 +56,11 @@ function LoginPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
       <div className="mb-6 flex items-center gap-3">
-        <img src={logoAsset.url} alt="TillyTasky jar logo" className="h-16 w-auto object-contain" />
+        <img
+          src="/tillytasky_logo_transparent.png"
+          alt="TillyTasky jar logo"
+          className="h-16 w-auto object-contain"
+        />
         <div>
           <h1 className="font-display text-3xl leading-none">TillyTasky</h1>
           <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till</p>
