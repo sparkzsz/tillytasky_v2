@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2, LogOut, Moon, Sun } from "lucide-react";
 
-import logoAsset from "@/public/tillytasky_logo_transparent.png";
 import { OverviewView } from "@/components/OverviewView";
 import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
@@ -77,7 +76,7 @@ function Index() {
             <LogOut className="size-4" />
           </button>
           <img
-            src={logoAsset.url}
+            src="/tillytasky_logo_transparent.png"
             alt="TillyTasky jar logo"
             className="h-full max-h-[104px] w-auto shrink-0 self-stretch object-contain object-right"
           />
