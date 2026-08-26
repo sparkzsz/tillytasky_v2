@@ -1,11 +1,4 @@
-{
-  "version": 1,
-  "asset_id": "968ead89-d9e3-4dc6-8dd0-63988d9d5e9f",
-  "project_id": "904188a8-7664-4216-99d3-0a482a2461e8",
-  "url": "/__l5e/assets-v1/968ead89-d9e3-4dc6-8dd0-63988d9d5e9f/tillytasky_logo_transparent.png",
-  "r2_key": "a/v1/904188a8-7664-4216-99d3-0a482a2461e8/968ead89-d9e3-4dc6-8dd0-63988d9d5e9f/tillytasky_logo_transparent.png",
-  "original_filename": "tillytasky_logo_transparent.png",
-  "size": 55736,
-  "content_type": "image/png",
-  "created_at": "2026-08-21T05:41:00Z"
-}
+<img
+  src="/tillytasky_logo_transparent.png"
+  alt="Tilly Tasky"
+/>
