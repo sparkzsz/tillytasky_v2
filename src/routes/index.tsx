@@ -8,6 +8,7 @@ import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
 import { TodayView } from "@/components/TodayView";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/lib/auth";
 import { useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till";
