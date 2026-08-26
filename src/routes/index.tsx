@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2, LogOut, Moon, Sun } from "lucide-react";
 
-import logoAsset from "@/assets/tillytasky_logo_transparent.png.asset.json";
+import logoAsset from "@/public/tillytasky_logo_transparent.png";
 import { OverviewView } from "@/components/OverviewView";
 import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
