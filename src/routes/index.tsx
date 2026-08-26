@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Loader2, LogOut, Moon, Sun } from "lucide-react";
 
 import logoAsset from "@/assets/tillytasky_logo_transparent.png.asset.json";
 import { OverviewView } from "@/components/OverviewView";
