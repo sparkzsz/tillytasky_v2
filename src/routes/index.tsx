@@ -30,7 +30,26 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { tasks, addTask, toggleTask, removeTask, updateTask } = useTasks();
   const { theme, toggleTheme } = useTheme();
+  const { session, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("today");
+
+  useEffect(() => {
+    if (!loading && !session) void navigate({ to: "/login", replace: true });
+  }, [loading, session, navigate]);
+
+  async function handleSignOut() {
+    await signOut();
+    void navigate({ to: "/login", replace: true });
+  }
+
+  if (loading || !session) {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-8 sm:py-12">
