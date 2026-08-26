@@ -67,6 +67,15 @@ function Index() {
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            aria-label="Log out"
+            title="Log out"
+            className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
+          >
+            <LogOut className="size-4" />
+          </button>
           <img
             src={logoAsset.url}
             alt="TillyTasky jar logo"
