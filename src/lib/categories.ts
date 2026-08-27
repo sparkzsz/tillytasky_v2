@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { supabase } from "./supabase";
+import { DEFAULT_CATEGORY_COLOR, registerCategoryColors } from "./tally";
 
 export const MAX_CATEGORIES = 15;
 
 export type UserCategory = {
   id: string;
   name: string;
+  color: string | null;
 };
 
 type State = {
@@ -20,6 +22,7 @@ function normalize(rows: Record<string, unknown>[]): UserCategory[] {
     .map((r) => ({
       id: String(r['id'] ?? r['category_id'] ?? ""),
       name: String(r['name'] ?? r['title'] ?? r['category'] ?? "").trim(),
+      color: r['color'] ? String(r['color']) : null,
     }))
     .filter((c) => c.id && c.name)
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -43,11 +46,9 @@ export function useCategories(sessionUserId: string | undefined) {
       setState({ categories: [], loading: false, error: error.message });
       return;
     }
-    setState({
-      categories: normalize((data ?? []) as Record<string, unknown>[]),
-      loading: false,
-      error: null,
-    });
+    const categories = normalize((data ?? []) as Record<string, unknown>[]);
+    registerCategoryColors(categories);
+    setState({ categories, loading: false, error: null });
   }, [sessionUserId]);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export function useCategories(sessionUserId: string | undefined) {
   );
 
   const create = useCallback(
-    async (rawName: string): Promise<string | null> => {
+    async (rawName: string, color?: string | null): Promise<string | null> => {
       const name = rawName.trim();
       if (!supabase) return "Categories are not configured yet.";
       if (!name) return "Give the category a name.";
@@ -72,9 +73,12 @@ export function useCategories(sessionUserId: string | undefined) {
       if (state.categories.length >= MAX_CATEGORIES)
         return `You can have at most ${MAX_CATEGORIES} categories.`;
 
-      let { error } = await supabase.from("categories").insert({ name, user_id: sessionUserId });
+      const row = { name, color: color ?? DEFAULT_CATEGORY_COLOR };
+      let { error } = await supabase
+        .from("categories")
+        .insert({ ...row, user_id: sessionUserId });
       if (error && /user_id/i.test(error.message)) {
-        ({ error } = await supabase.from("categories").insert({ name }));
+        ({ error } = await supabase.from("categories").insert(row));
       }
       if (error) return error.message;
       await refresh();
@@ -84,18 +88,21 @@ export function useCategories(sessionUserId: string | undefined) {
   );
 
   const update = useCallback(
-    async (id: string, rawName: string): Promise<string | null> => {
+    async (id: string, rawName: string, color?: string | null): Promise<string | null> => {
       const name = rawName.trim();
       if (!supabase) return "Categories are not configured yet.";
       if (!name) return "Give the category a name.";
       if (exists(name, id)) return "You already have a category with that name.";
-      const { error } = await supabase.from("categories").update({ name }).eq("id", id);
+      const patch: { name: string; color?: string } = { name };
+      if (color) patch.color = color;
+      const { error } = await supabase.from("categories").update(patch).eq("id", id);
       if (error) return error.message;
       await refresh();
       return null;
     },
     [exists, refresh],
   );
+
 
   const remove = useCallback(
     async (id: string): Promise<string | null> => {
