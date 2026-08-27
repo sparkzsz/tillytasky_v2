@@ -78,6 +78,22 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
             />
           </div>
           <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="task-description">Description</Label>
+              <span className="text-xs text-muted-foreground">
+                {description.length}/{MAX_DESCRIPTION}
+              </span>
+            </div>
+            <Textarea
+              id="task-description"
+              value={description}
+              maxLength={MAX_DESCRIPTION}
+              rows={3}
+              placeholder="Add a short note (optional)"
+              onChange={(e) => setDescription(e.target.value.slice(0, MAX_DESCRIPTION))}
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="task-date">Date</Label>
             <Input
               id="task-date"
