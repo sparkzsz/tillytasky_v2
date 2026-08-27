@@ -119,6 +119,19 @@ export function CategoryManager({
 
   const panel = (
     <>
+      {onboarding && (
+        <div className="mb-6 flex items-center gap-3">
+          <img
+            src="/tillytasky_logo_transparent.png"
+            alt="TillyTasky jar logo"
+            className="h-16 w-auto object-contain"
+          />
+          <div>
+            <h1 className="font-display text-3xl leading-none">TillyTasky</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till</p>
+          </div>
+        </div>
+      )}
       <div
         className={cn(
           onboarding ? "rounded-2xl border-2 border-foreground bg-card p-5 shadow-sm" : "card-pop p-5",
@@ -127,10 +140,10 @@ export function CategoryManager({
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className={cn("font-display", onboarding ? "text-xl" : "text-2xl")}>
-              {onboarding ? "Set up your categories" : "Your categories"}
+              {onboarding ? "Set up your categories" : "Categories."}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Categories keep your till organized. Group tasks by class, work, habit, and more.
+              Keep your till organized. Group tasks by class, work, habit, and more.
             </p>
           </div>
           <span className="chip-outline px-3 py-1 text-sm">
@@ -279,16 +292,6 @@ export function CategoryManager({
         ))}
       </div>
 
-      {onboarding && (
-        <Button
-          size="lg"
-          onClick={onFinish}
-          disabled={categories.length === 0}
-          className="w-full rounded-full font-display"
-        >
-          Finish setup
-        </Button>
-      )}
     </>
   );
 
