@@ -14,18 +14,23 @@ export type Task = {
 
 type CategoryStyle = { chip: string; dot: string; chart: string };
 
-const PALETTE: CategoryStyle[] = [
-  { chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
-  { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
-  { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
-  { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
-  { chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
-  { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
-  { chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
-  { chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
-  { chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
-  { chip: "bg-eggplant text-daffodil", dot: "bg-eggplant", chart: "var(--eggplant)" },
+/** Pickable category colors. Each chip pairs a palette background with readable text in both modes. */
+export const CATEGORY_COLORS: (CategoryStyle & { hex: string; label: string })[] = [
+  { hex: "#DBC0E8", label: "Lavender", chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
+  { hex: "#A3C1E2", label: "Skies", chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
+  { hex: "#FBB28B", label: "Peaches", chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
+  { hex: "#F76F54", label: "Poppy", chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  { hex: "#F7E289", label: "Daffodil", chip: "bg-daffodil text-night", dot: "bg-daffodil", chart: "var(--daffodil)" },
+  { hex: "#EA5E86", label: "Fuchsia", chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
+  { hex: "#47B5A8", label: "Pool", chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
+  { hex: "#F9A2C5", label: "Cotton candy", chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
+  { hex: "#6B515E", label: "Eggplant", chip: "bg-eggplant text-daffodil", dot: "bg-eggplant", chart: "var(--eggplant)" },
+  { hex: "#B79A65", label: "Hay", chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
 ];
+
+export const DEFAULT_CATEGORY_COLOR = CATEGORY_COLORS[0]!.hex;
+
+const PALETTE: CategoryStyle[] = CATEGORY_COLORS;
 
 const FALLBACK: CategoryStyle = {
   chip: "bg-muted text-muted-foreground",
@@ -33,13 +38,31 @@ const FALLBACK: CategoryStyle = {
   chart: "var(--muted)",
 };
 
-/** Stable color per category name, so colors stay consistent across views. */
+/** name -> saved hex, kept in sync by useCategories so every view shows the chosen color. */
+const colorByName = new Map<string, string>();
+
+export function registerCategoryColors(entries: { name: string; color: string | null }[]) {
+  colorByName.clear();
+  for (const e of entries) {
+    if (e.color) colorByName.set(e.name.toLowerCase(), e.color.toLowerCase());
+  }
+}
+
+export function styleForHex(hex: string | null | undefined): CategoryStyle | undefined {
+  if (!hex) return undefined;
+  return CATEGORY_COLORS.find((c) => c.hex.toLowerCase() === hex.toLowerCase());
+}
+
+/** The user's chosen color when set, otherwise a stable color derived from the name. */
 export function categoryStyle(name: Category | null | undefined): CategoryStyle {
   if (!name) return FALLBACK;
+  const chosen = styleForHex(colorByName.get(name.toLowerCase()));
+  if (chosen) return chosen;
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 100000;
   return PALETTE[hash % PALETTE.length] ?? FALLBACK;
 }
+
 
 export function toKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
