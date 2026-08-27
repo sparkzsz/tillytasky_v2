@@ -123,7 +123,9 @@ export function useTasks() {
         completedAt: null,
       },
     ]);
-  }, []);
+    },
+    [],
+  );
 
   const toggleTask = useCallback((id: string) => {
     setTasks((prev) =>
