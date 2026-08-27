@@ -225,7 +225,34 @@ export function CategoryManager({
           </div>
         )}
         {categories.map((c, i) => (
-          <div key={c.id} className="card-pop p-4">
+          <div
+            key={c.id}
+            draggable={canDrag && editingId !== c.id}
+            onDragStart={(e) => {
+              setDragId(c.id);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onDragEnd={() => {
+              setDragId(null);
+              setOverId(null);
+            }}
+            onDragOver={(e) => {
+              if (!canDrag || !dragId || dragId === c.id) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              setOverId(c.id);
+            }}
+            onDragLeave={() => setOverId((prev) => (prev === c.id ? null : prev))}
+            onDrop={(e) => {
+              e.preventDefault();
+              dropOn(c.id);
+            }}
+            className={cn(
+              "card-pop p-4 transition-opacity",
+              dragId === c.id && "opacity-50",
+              overId === c.id && dragId !== c.id && "ring-2 ring-foreground",
+            )}
+          >
             {editingId === c.id ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
