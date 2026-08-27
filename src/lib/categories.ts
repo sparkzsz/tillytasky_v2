@@ -184,5 +184,6 @@ export function useCategories(sessionUserId: string | undefined) {
     update,
     remove,
     move,
+    reorder,
   };
 }
