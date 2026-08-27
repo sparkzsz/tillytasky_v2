@@ -292,16 +292,6 @@ export function CategoryManager({
         ))}
       </div>
 
-      {onboarding && (
-        <Button
-          size="lg"
-          onClick={onFinish}
-          disabled={categories.length === 0}
-          className="w-full rounded-full font-display"
-        >
-          Finish setup
-        </Button>
-      )}
     </>
   );
 
