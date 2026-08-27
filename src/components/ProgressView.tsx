@@ -11,14 +11,14 @@ import {
 } from "recharts";
 
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { CATEGORIES, CATEGORY_STYLE, toKey, type Category, type Task } from "@/lib/tally";
+import { categoryStyle, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
-type Props = { tasks: Task[] };
+type Props = { tasks: Task[]; categories: Category[] };
 
 const RANGES = [7, 14, 30] as const;
 
-export function ProgressView({ tasks }: Props) {
+export function ProgressView({ tasks, categories }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [range, setRange] = useState<(typeof RANGES)[number]>(7);
 
@@ -50,7 +50,13 @@ export function ProgressView({ tasks }: Props) {
   const avg = data.length ? total / data.length : 0;
   const bestDay = data.reduce((m, d) => Math.max(m, d.completed), 0);
 
-  const byCategory = CATEGORIES.map((c) => ({
+  const allCategories = useMemo(() => {
+    const set = new Set<string>(categories);
+    for (const t of tasks) if (t.category) set.add(t.category);
+    return [...set];
+  }, [categories, tasks]);
+
+  const byCategory = allCategories.map((c) => ({
     category: c,
     count: tasks.filter((t) => t.done && t.category === c).length,
   }));
@@ -59,7 +65,7 @@ export function ProgressView({ tasks }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <CategoryFilter active={filter} onChange={setFilter} />
+        <CategoryFilter categories={categories} active={filter} onChange={setFilter} />
         <div className="flex gap-2">
           {RANGES.map((r) => (
             <button
@@ -161,7 +167,7 @@ export function ProgressView({ tasks }: Props) {
                 className={cn(
                   "w-24 shrink-0 rounded-full px-2 py-0.5 text-center text-xs font-semibold transition-colors",
                   filter === b.category
-                    ? CATEGORY_STYLE[b.category].chip
+                    ? categoryStyle(b.category).chip
                     : "text-foreground",
                 )}
               >
@@ -172,7 +178,7 @@ export function ProgressView({ tasks }: Props) {
                   className="h-full rounded-full transition-all"
                   style={{
                     width: `${(b.count / maxCat) * 100}%`,
-                    background: CATEGORY_STYLE[b.category].chart,
+                    background: categoryStyle(b.category).chart,
                   }}
                 />
               </div>

@@ -9,14 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CATEGORY_STYLE, fromKey, toKey, type Category, type Task } from "@/lib/tally";
+import { categoryStyle, fromKey, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
-type Props = { tasks: Task[] };
+type Props = { tasks: Task[]; categories: Category[] };
 
-export function OverviewView({ tasks }: Props) {
+export function OverviewView({ tasks, categories }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState(() => {
@@ -55,7 +55,7 @@ export function OverviewView({ tasks }: Props) {
 
   return (
     <div className="space-y-6">
-      <CategoryFilter active={filter} onChange={setFilter} />
+      <CategoryFilter categories={categories} active={filter} onChange={setFilter} />
 
       <div className="card-pop p-5">
         <div className="mb-4 flex items-center justify-between">
@@ -118,7 +118,7 @@ export function OverviewView({ tasks }: Props) {
                         <span
                           key={t.id}
                           title={t.title}
-                          className={cn("size-1.5 rounded-full", CATEGORY_STYLE[t.category].dot)}
+                          className={cn("size-1.5 rounded-full", categoryStyle(t.category).dot)}
                         />
                       ))}
                     </div>
@@ -171,7 +171,7 @@ export function OverviewView({ tasks }: Props) {
                 <span
                   className={cn(
                     "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
-                    CATEGORY_STYLE[t.category].chip,
+                    categoryStyle(t.category).chip,
                   )}
                 >
                   {t.category}
