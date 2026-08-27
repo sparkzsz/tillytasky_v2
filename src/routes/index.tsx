@@ -108,9 +108,9 @@ function Index() {
           {[
             { value: "today", label: "Today" },
             { value: "tasks", label: "Tasks" },
+            { value: "categories", label: "Categories" },
             { value: "overview", label: "Overview" },
             { value: "progress", label: "Progress" },
-            { value: "categories", label: "Categories" },
           ].map((t) => (
             <TabsTrigger
               key={t.value}
@@ -154,6 +154,7 @@ function Index() {
             onCreate={cats.create}
             onUpdate={cats.update}
             onRemove={cats.remove}
+            onMove={cats.move}
           />
         </TabsContent>
         <TabsContent value="progress">

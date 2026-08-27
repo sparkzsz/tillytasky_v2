@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,8 @@ type Props = {
   onCreate: (name: string, color?: string | null) => Promise<string | null>;
   onUpdate: (id: string, name: string, color?: string | null) => Promise<string | null>;
   onRemove: (id: string) => Promise<string | null>;
+  /** Reorders the category list used by Today, Tasks and Progress. */
+  onMove?: (id: string, dir: -1 | 1) => void;
   /** Onboarding mode: login-page styling + Finish action instead of a plain list. */
   onboarding?: boolean;
   onFinish?: () => void;
@@ -72,6 +74,7 @@ export function CategoryManager({
   onCreate,
   onUpdate,
   onRemove,
+  onMove,
   onboarding = false,
   onFinish,
 }: Props) {
@@ -144,6 +147,7 @@ export function CategoryManager({
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Keep your till organized. Group tasks by class, work, habit, and more.
+              {!onboarding && " Use the arrows to set the order shown in Today, Tasks and Progress."}
             </p>
           </div>
           <span className="chip-outline px-3 py-1 text-sm">
@@ -220,7 +224,7 @@ export function CategoryManager({
             </p>
           </div>
         )}
-        {categories.map((c) => (
+        {categories.map((c, i) => (
           <div key={c.id} className="card-pop p-4">
             {editingId === c.id ? (
               <div className="space-y-3">
@@ -266,6 +270,28 @@ export function CategoryManager({
                   {c.name}
                 </span>
                 <span className="flex-1" />
+                {onMove && (
+                  <>
+                    <button
+                      type="button"
+                      aria-label={`Move ${c.name} up`}
+                      disabled={i === 0}
+                      onClick={() => onMove(c.id, -1)}
+                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                    >
+                      <ArrowUp className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move ${c.name} down`}
+                      disabled={i === categories.length - 1}
+                      onClick={() => onMove(c.id, 1)}
+                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                    >
+                      <ArrowDown className="size-4" />
+                    </button>
+                  </>
+                )}
                 <button
                   type="button"
                   aria-label="Edit category"

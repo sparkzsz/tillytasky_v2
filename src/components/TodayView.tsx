@@ -21,7 +21,10 @@ type Props = {
   onAdd: (title: string, category: Category, date: string) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
-  onUpdate: (id: string, patch: { title: string; category: Category; date: string }) => void;
+  onUpdate: (
+    id: string,
+    patch: { title: string; category: Category; date: string; description: string | null },
+  ) => void;
 };
 
 export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpdate }: Props) {
@@ -125,6 +128,9 @@ function handleToggle(task: Task, el: HTMLButtonElement) {
               <p className={cn("truncate font-semibold", task.done && "line-through")}>
                 {task.title}
               </p>
+              {task.description && (
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{task.description}</p>
+              )}
               <span
                 className={cn(
                   "mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold",
