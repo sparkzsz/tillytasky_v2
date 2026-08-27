@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   tasks: Task[];
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string) => void;
+  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
   onUpdate: (

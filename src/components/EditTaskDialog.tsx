@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { categoryStyle, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
-const MAX_DESCRIPTION = 200;
+const MAX_DESCRIPTION = 100;
 
 type Props = {
   categories: Category[];
