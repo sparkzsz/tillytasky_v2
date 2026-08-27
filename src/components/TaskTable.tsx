@@ -13,7 +13,7 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   categoryStyle,
-  fireConfetti,
+  fireEmoji,
   fromKey,
   toKey,
   type Category,
@@ -107,9 +107,12 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                   <button
                     type="button"
                     aria-label={t.done ? "Mark incomplete" : "Complete task"}
-                    onClick={() => {
+                    onClick={(e) => {
                       onToggle(t.id);
-                      if (!t.done) fireConfetti();
+                      if (!t.done) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        fireEmoji(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                      }
                     }}
                     className={cn(
                       "grid size-7 place-items-center rounded-full border-2 border-foreground transition-transform active:scale-90",
