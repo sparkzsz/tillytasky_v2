@@ -63,9 +63,6 @@ function load(): Task[] {
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
         }
-        if (!CATEGORIES.includes(t.category)) {
-          return { ...t, category: "General" } as Task;
-        }
         return t;
       })
       .filter((t) => t.title && t.date);
