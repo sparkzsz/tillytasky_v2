@@ -336,7 +336,7 @@ export function CategoryManager({
               Delete
             </Button>
           </DialogFooter>
-        </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );
