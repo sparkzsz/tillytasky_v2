@@ -261,6 +261,26 @@ export function CategoryManager({
               </div>
             ) : (
               <div className="flex items-center gap-3">
+                {canDrag && (
+                  <button
+                    type="button"
+                    aria-label={`Reorder ${c.name}. Use arrow up or arrow down to move.`}
+                    title="Drag to reorder"
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        moveBy(i, -1);
+                      }
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        moveBy(i, 1);
+                      }
+                    }}
+                    className="cursor-grab rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing"
+                  >
+                    <GripVertical className="size-4" />
+                  </button>
+                )}
                 <span
                   className={cn(
                     "rounded-full px-3 py-1 text-sm font-semibold",
