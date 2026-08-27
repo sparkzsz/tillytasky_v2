@@ -8,7 +8,7 @@ import {
   bestRecord,
   categoryStyle,
   countsByDay,
-  fireConfetti,
+  fireEmoji,
   toKey,
   type Category,
   type Task,
@@ -42,9 +42,12 @@ export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpda
   const { best } = bestRecord(tasks, today);
   const toBeat = Math.max(best, yesterday);
 
-  function handleToggle(task: Task) {
+function handleToggle(task: Task, el: HTMLButtonElement) {
     onToggle(task.id);
-    if (!task.done) fireConfetti();
+    if (!task.done) {
+      const rect = el.getBoundingClientRect();
+      fireEmoji(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
   }
 
   return (
@@ -110,7 +113,7 @@ export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpda
             <button
               type="button"
               aria-label={task.done ? "Mark incomplete" : "Complete task"}
-              onClick={() => handleToggle(task)}
+              onClick={(e) => handleToggle(task, e.currentTarget)}
               className={cn(
                 "grid size-9 shrink-0 place-items-center rounded-full border-2 border-foreground transition-transform active:scale-90",
                 task.done ? "bg-accent text-accent-foreground" : "bg-transparent",

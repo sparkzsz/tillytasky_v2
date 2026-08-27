@@ -190,13 +190,22 @@ export function useTheme() {
   return { theme, toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")) };
 }
 
-export function fireConfetti() {
-  void import("canvas-confetti").then(({ default: confetti }) => {
-    const colors = ["#F76F54", "#FBB28B", "#F7E289", "#47B5A8", "#EA5E86", "#DBC0E8", "#A3C1E2"];
-    confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 }, colors });
-    setTimeout(
-      () => confetti({ particleCount: 60, spread: 110, origin: { y: 0.6 }, colors, startVelocity: 35 }),
-      150,
-    );
-  });
+const EMOJI_POOL = ["🎉", "⭐", "🔥", "🚀", "✅", "🏆", "✨"];
+
+export function fireEmoji(x: number, y: number) {
+  if (typeof document === "undefined") return;
+  const emoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]!;
+  const el = document.createElement("div");
+  el.textContent = emoji;
+  el.className = "emoji-burst";
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 60 + Math.random() * 40;
+  el.style.setProperty("--burst-x", `${Math.cos(angle) * distance}px`);
+  el.style.setProperty("--burst-y", `${Math.sin(angle) * distance - 30}px`);
+
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
 }
