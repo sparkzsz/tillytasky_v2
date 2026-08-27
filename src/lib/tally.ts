@@ -109,7 +109,8 @@ export function useTasks() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks, hydrated]);
 
-  const addTask = useCallback((title: string, category: Category, date: string) => {
+  const addTask = useCallback(
+    (title: string, category: Category, date: string, description?: string | null) => {
     setTasks((prev) => [
       ...prev,
       {
@@ -117,7 +118,7 @@ export function useTasks() {
         title,
         category,
         date,
-        description: null,
+        description: description?.trim() ? description.trim().slice(0, 100) : null,
         done: false,
         completedAt: null,
       },
