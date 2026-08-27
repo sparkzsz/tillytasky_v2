@@ -1,9 +1,27 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { supabase } from "./supabase";
 import { DEFAULT_CATEGORY_COLOR, registerCategoryColors } from "./tally";
 
 export const MAX_CATEGORIES = 15;
+
+const ORDER_KEY = "tillytasky.category-order.v1";
+
+function loadOrder(userId: string | undefined): string[] {
+  if (typeof window === "undefined" || !userId) return [];
+  try {
+    const raw = window.localStorage.getItem(`${ORDER_KEY}.${userId}`);
+    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveOrder(userId: string | undefined, ids: string[]) {
+  if (typeof window === "undefined" || !userId) return;
+  window.localStorage.setItem(`${ORDER_KEY}.${userId}`, JSON.stringify(ids));
+}
 
 export type UserCategory = {
   id: string;
@@ -34,6 +52,22 @@ function normalize(rows: Record<string, unknown>[]): UserCategory[] {
  */
 export function useCategories(sessionUserId: string | undefined) {
   const [state, setState] = useState<State>({ categories: [], loading: true, error: null });
+  const [order, setOrder] = useState<string[]>([]);
+
+  useEffect(() => {
+    setOrder(loadOrder(sessionUserId));
+  }, [sessionUserId]);
+
+  /** Alphabetical by default; the user's saved order wins when present. */
+  const ordered = useMemo(() => {
+    const rank = new Map(order.map((id, i) => [id, i]));
+    return [...state.categories].sort((a, b) => {
+      const ra = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+      const rb = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      if (ra !== rb) return ra - rb;
+      return a.name.localeCompare(b.name);
+    });
+  }, [state.categories, order]);
 
   const refresh = useCallback(async () => {
     if (!supabase || !sessionUserId) {
@@ -115,9 +149,25 @@ export function useCategories(sessionUserId: string | undefined) {
     [refresh],
   );
 
+  /** Moves a category up (-1) or down (+1) in the user's display order. */
+  const move = useCallback(
+    (id: string, dir: -1 | 1) => {
+      const ids = ordered.map((c) => c.id);
+      const from = ids.indexOf(id);
+      const to = from + dir;
+      if (from < 0 || to < 0 || to >= ids.length) return;
+      const next = [...ids];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved!);
+      saveOrder(sessionUserId, next);
+      setOrder(next);
+    },
+    [ordered, sessionUserId],
+  );
+
   return {
-    categories: state.categories,
-    names: state.categories.map((c) => c.name),
+    categories: ordered,
+    names: ordered.map((c) => c.name),
     loading: state.loading,
     error: state.error,
     atLimit: state.categories.length >= MAX_CATEGORIES,
@@ -125,5 +175,6 @@ export function useCategories(sessionUserId: string | undefined) {
     create,
     update,
     remove,
+    move,
   };
 }

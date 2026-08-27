@@ -11,33 +11,46 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { categoryStyle, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
+
+const MAX_DESCRIPTION = 200;
 
 type Props = {
   categories: Category[];
   task: Task | null;
   onClose: () => void;
-  onSave: (id: string, patch: { title: string; category: Category; date: string }) => void;
+  onSave: (
+    id: string,
+    patch: { title: string; category: Category; date: string; description: string | null },
+  ) => void;
 };
 
 export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [category, setCategory] = useState<Category>("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (!task) return;
     setTitle(task.title);
     setDate(task.date);
     setCategory(task.category);
+    setDescription(task.description ?? "");
   }, [task]);
 
   function save() {
     if (!task) return;
     const trimmed = title.trim();
     if (!trimmed) return;
-    onSave(task.id, { title: trimmed, category: category || task.category, date: date || task.date });
+    onSave(task.id, {
+      title: trimmed,
+      category: category || task.category,
+      date: date || task.date,
+      description: description.trim() ? description.trim().slice(0, MAX_DESCRIPTION) : null,
+    });
     onClose();
   }
 
@@ -60,6 +73,22 @@ export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") save();
               }}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="edit-description">Description</Label>
+              <span className="text-xs text-muted-foreground">
+                {description.length}/{MAX_DESCRIPTION}
+              </span>
+            </div>
+            <Textarea
+              id="edit-description"
+              value={description}
+              maxLength={MAX_DESCRIPTION}
+              rows={3}
+              placeholder="Add a short note (optional)"
+              onChange={(e) => setDescription(e.target.value.slice(0, MAX_DESCRIPTION))}
             />
           </div>
           <div className="space-y-2">
