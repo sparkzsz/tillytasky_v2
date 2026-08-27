@@ -1,12 +1,13 @@
-import { CATEGORIES, CATEGORY_STYLE, type Category } from "@/lib/tally";
+import { categoryStyle, type Category } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  categories: Category[];
   active: Category | "all";
   onChange: (value: Category | "all") => void;
 };
 
-export function CategoryFilter({ active, onChange }: Props) {
+export function CategoryFilter({ categories, active, onChange }: Props) {
   return (
     <div className="flex flex-wrap gap-2">
       <button
@@ -19,14 +20,14 @@ export function CategoryFilter({ active, onChange }: Props) {
       >
         All
       </button>
-      {CATEGORIES.map((c) => (
+      {categories.map((c) => (
         <button
           key={c}
           type="button"
           onClick={() => onChange(c)}
           className={cn(
             "chip-outline px-3 py-1 text-sm",
-            active === c ? CATEGORY_STYLE[c].chip : "bg-transparent",
+            active === c ? categoryStyle(c).chip : "bg-transparent",
           )}
         >
           {c}
