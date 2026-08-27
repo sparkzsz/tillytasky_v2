@@ -270,28 +270,6 @@ export function CategoryManager({
                   {c.name}
                 </span>
                 <span className="flex-1" />
-                {onMove && (
-                  <>
-                    <button
-                      type="button"
-                      aria-label={`Move ${c.name} up`}
-                      disabled={i === 0}
-                      onClick={() => onMove(c.id, -1)}
-                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
-                    >
-                      <ArrowUp className="size-4" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Move ${c.name} down`}
-                      disabled={i === categories.length - 1}
-                      onClick={() => onMove(c.id, 1)}
-                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
-                    >
-                      <ArrowDown className="size-4" />
-                    </button>
-                  </>
-                )}
                 <button
                   type="button"
                   aria-label="Edit category"
