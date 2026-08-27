@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, Pencil, Search, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -7,6 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -27,19 +30,33 @@ type Props = {
   onAdd: (title: string, category: Category, date: string) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
-  onUpdate: (id: string, patch: { title: string; category: Category; date: string }) => void;
+  onUpdate: (
+    id: string,
+    patch: { title: string; category: Category; date: string; description: string | null },
+  ) => void;
 };
 
 type SortKey = "date" | "title" | "category" | "done";
 
 export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpdate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
+  const [query, setQuery] = useState("");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "date", dir: -1 });
   const [editing, setEditing] = useState<Task | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
   const today = toKey(new Date());
 
   const rows = useMemo(() => {
-    const base = filter === "all" ? tasks : tasks.filter((t) => t.category === filter);
+    const q = query.trim().toLowerCase();
+    let base = filter === "all" ? tasks : tasks.filter((t) => t.category === filter);
+    if (q) {
+      base = base.filter(
+        (t) =>
+          t.title.toLowerCase().includes(q) ||
+          (t.description ?? "").toLowerCase().includes(q) ||
+          t.category.toLowerCase().includes(q),
+      );
+    }
     const { key, dir } = sort;
     return [...base].sort((a, b) => {
       let cmp = 0;
@@ -47,10 +64,23 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
       else cmp = String(a[key]).localeCompare(String(b[key]));
       return cmp * dir;
     });
-  }, [tasks, filter, sort]);
+  }, [tasks, filter, sort, query]);
+
+  const selectedSet = new Set(selected);
+  const visibleSelected = rows.filter((t) => selectedSet.has(t.id)).length;
+  const allSelected = rows.length > 0 && visibleSelected === rows.length;
 
   function toggleSort(key: SortKey) {
     setSort((s) => (s.key === key ? { key, dir: s.dir === 1 ? -1 : 1 } : { key, dir: 1 }));
+  }
+
+  function toggleSelected(id: string) {
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  function deleteSelected() {
+    selected.forEach((id) => onRemove(id));
+    setSelected([]);
   }
 
   const columns: { key: SortKey; label: string; className: string }[] = [
@@ -67,10 +97,44 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
         <AddTaskDialog categories={categories} defaultDate={today} onAdd={onAdd} />
       </div>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative min-w-52 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search tasks…"
+            aria-label="Search tasks"
+            className="pl-9"
+          />
+        </div>
+        {selected.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{selected.length} selected</span>
+            <Button
+              variant="destructive"
+              onClick={deleteSelected}
+              className="gap-2 border-2 border-foreground font-display"
+            >
+              <Trash2 className="size-4" /> Delete
+            </Button>
+          </div>
+        )}
+      </div>
+
       <div className="card-pop overflow-x-auto p-0">
-        <table className="w-full min-w-[560px] border-collapse text-sm">
+        <table className="w-full min-w-[600px] border-collapse text-sm">
           <thead>
             <tr className="border-b-2 border-foreground">
+              <th className="w-10 p-3">
+                <Checkbox
+                  checked={allSelected}
+                  aria-label="Select all tasks"
+                  onCheckedChange={(v) =>
+                    setSelected(v === true ? rows.map((t) => t.id) : [])
+                  }
+                />
+              </th>
               {columns.map((c) => (
                 <th key={c.key} className={cn("p-3 text-left", c.className)}>
                   <button
@@ -96,13 +160,20 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                  No tasks in your till yet.
+                <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                  {query.trim() ? "No tasks match your search." : "No tasks in your till yet."}
                 </td>
               </tr>
             )}
             {rows.map((t) => (
               <tr key={t.id} className="border-b border-border last:border-0">
+                <td className="p-3">
+                  <Checkbox
+                    checked={selectedSet.has(t.id)}
+                    aria-label={`Select ${t.title}`}
+                    onCheckedChange={() => toggleSelected(t.id)}
+                  />
+                </td>
                 <td className="p-3">
                   <button
                     type="button"
@@ -124,6 +195,11 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                 </td>
                 <td className={cn("p-3 font-semibold", t.done && "line-through opacity-70")}>
                   {t.title}
+                  {t.description && (
+                    <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                      {t.description}
+                    </span>
+                  )}
                 </td>
                 <td className="p-3">
                   <span
