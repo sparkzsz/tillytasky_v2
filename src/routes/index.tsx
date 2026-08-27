@@ -12,7 +12,7 @@ import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
 import { useTasks, useTheme } from "@/lib/tally";
 
-const TITLE = "TillyTasky — Stack tasks in your till";
+const TITLE = "TillyTasky — Stack tasks in your till.";
 const DESCRIPTION =
   "Tally how many tasks you finish each day, beat yesterday's record, and watch your progress climb with a confetti hit on every checkmark.";
 
@@ -61,7 +61,7 @@ function Index() {
         <header className="mb-6 flex items-stretch justify-between gap-4">
           <div className="flex flex-col justify-between">
             <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till</p>
+            <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till.</p>
           </div>
           <div className="flex items-start gap-3 self-stretch">
             <button

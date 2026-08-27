@@ -195,22 +195,3 @@
     transform: translateY(-1px);
   }
 }
-
-@keyframes emoji-burst {
-  0% {
-    transform: translate(-50%, -50%) scale(0.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(1.5);
-    opacity: 0;
-  }
-}
-
-.emoji-burst {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  font-size: 2rem;
-  animation: emoji-burst 0.8s ease-out forwards;
-}

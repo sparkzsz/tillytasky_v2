@@ -190,27 +190,19 @@ export function useTheme() {
   return { theme, toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")) };
 }
 
-const EMOJI_POOL = ["🎉", "⭐", "🔥", "🚀", "✅", "🏆", "✨"];
-
-export function fireEmoji(x: number, y: number) {
+export async function fireConfetti(x: number, y: number) {
   if (typeof document === "undefined") return;
-  const emoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]!;
-
-  for (let i = 0; i < 5; i++) {
-    const el = document.createElement("div");
-    el.textContent = emoji;
-    el.className = "emoji-burst";
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
-
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 50 + Math.random() * 70;
-    const duration = 0.7 + Math.random() * 0.3;
-    el.style.setProperty("--burst-x", `${Math.cos(angle) * distance}px`);
-    el.style.setProperty("--burst-y", `${Math.sin(angle) * distance}px`);
-    el.style.animationDuration = `${duration}s`;
-
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), duration * 1000);
-  }
+  const confetti = (await import("canvas-confetti")).default;
+  const origin = {
+    x: x / window.innerWidth,
+    y: y / window.innerHeight,
+  };
+  confetti({
+    particleCount: 90,
+    spread: 70,
+    startVelocity: 35,
+    scalar: 0.9,
+    origin,
+  });
 }
+

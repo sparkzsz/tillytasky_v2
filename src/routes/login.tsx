@@ -63,7 +63,7 @@ function LoginPage() {
         />
         <div>
           <h1 className="font-display text-3xl leading-none">TillyTasky</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till</p>
+          <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till.</p>
         </div>
       </div>
 

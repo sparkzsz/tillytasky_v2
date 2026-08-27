@@ -128,7 +128,7 @@ export function CategoryManager({
           />
           <div>
             <h1 className="font-display text-3xl leading-none">TillyTasky</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till</p>
+            <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till.</p>
           </div>
         </div>
       )}
@@ -140,7 +140,7 @@ export function CategoryManager({
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className={cn("font-display", onboarding ? "text-xl" : "text-2xl")}>
-              {onboarding ? "Set up your categories" : "Categories."}
+              {onboarding ? "Set up your categories" : "Categories"}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Keep your till organized. Group tasks by class, work, habit, and more.
