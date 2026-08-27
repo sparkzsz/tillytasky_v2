@@ -12,7 +12,7 @@ import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
-  CATEGORY_STYLE,
+  categoryStyle,
   fireConfetti,
   fromKey,
   toKey,
@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   tasks: Task[];
+  categories: Category[];
   onAdd: (title: string, category: Category, date: string) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
@@ -31,7 +32,7 @@ type Props = {
 
 type SortKey = "date" | "title" | "category" | "done";
 
-export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props) {
+export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpdate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "date", dir: -1 });
   const [editing, setEditing] = useState<Task | null>(null);
@@ -62,8 +63,8 @@ export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <CategoryFilter active={filter} onChange={setFilter} />
-        <AddTaskDialog defaultDate={today} onAdd={onAdd} />
+        <CategoryFilter categories={categories} active={filter} onChange={setFilter} />
+        <AddTaskDialog categories={categories} defaultDate={today} onAdd={onAdd} />
       </div>
 
       <div className="card-pop overflow-x-auto p-0">
@@ -125,7 +126,7 @@ export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
                   <span
                     className={cn(
                       "inline-block rounded-full px-2 py-0.5 text-xs font-semibold",
-                      CATEGORY_STYLE[t.category].chip,
+                      categoryStyle(t.category).chip,
                     )}
                   >
                     {t.category}
@@ -172,7 +173,7 @@ export function TaskTable({ tasks, onAdd, onToggle, onRemove, onUpdate }: Props)
         </table>
       </div>
 
-      <EditTaskDialog task={editing} onClose={() => setEditing(null)} onSave={onUpdate} />
+      <EditTaskDialog categories={categories} task={editing} onClose={() => setEditing(null)} onSave={onUpdate} />
     </div>
   );
 }

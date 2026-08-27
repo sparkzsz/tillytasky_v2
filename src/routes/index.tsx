@@ -7,7 +7,9 @@ import { ProgressView } from "@/components/ProgressView";
 import { TaskTable } from "@/components/TaskTable";
 import { TodayView } from "@/components/TodayView";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CategoryManager } from "@/components/CategoryManager";
 import { useAuth } from "@/lib/auth";
+import { useCategories } from "@/lib/categories";
 import { useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till";
@@ -31,7 +33,10 @@ function Index() {
   const { theme, toggleTheme } = useTheme();
   const { session, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const cats = useCategories(session?.user.id);
   const [tab, setTab] = useState("today");
+  const [setupDone, setSetupDone] = useState(false);
+  const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
 
   useEffect(() => {
     if (!loading && !session) void navigate({ to: "/login", replace: true });
@@ -83,6 +88,19 @@ function Index() {
         </div>
       </header>
 
+      {needsOnboarding ? (
+        <CategoryManager
+          onboarding
+          onFinish={() => setSetupDone(true)}
+          categories={cats.categories}
+          loading={cats.loading}
+          error={cats.error}
+          atLimit={cats.atLimit}
+          onCreate={cats.create}
+          onUpdate={cats.update}
+          onRemove={cats.remove}
+        />
+      ) : (
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-6 h-auto flex-wrap rounded-full border-2 border-foreground bg-card p-1">
           {[
@@ -90,6 +108,7 @@ function Index() {
             { value: "tasks", label: "Tasks" },
             { value: "overview", label: "Overview" },
             { value: "progress", label: "Progress" },
+            { value: "categories", label: "Categories" },
           ].map((t) => (
             <TabsTrigger
               key={t.value}
@@ -104,6 +123,7 @@ function Index() {
         <TabsContent value="today">
           <TodayView
             tasks={tasks}
+            categories={cats.names}
             onAdd={addTask}
             onToggle={toggleTask}
             onRemove={removeTask}
@@ -113,6 +133,7 @@ function Index() {
         <TabsContent value="tasks">
           <TaskTable
             tasks={tasks}
+            categories={cats.names}
             onAdd={addTask}
             onToggle={toggleTask}
             onRemove={removeTask}
@@ -120,12 +141,24 @@ function Index() {
           />
         </TabsContent>
         <TabsContent value="overview">
-          <OverviewView tasks={tasks} />
+          <OverviewView tasks={tasks} categories={cats.names} />
+        </TabsContent>
+        <TabsContent value="categories">
+          <CategoryManager
+            categories={cats.categories}
+            loading={cats.loading}
+            error={cats.error}
+            atLimit={cats.atLimit}
+            onCreate={cats.create}
+            onUpdate={cats.update}
+            onRemove={cats.remove}
+          />
         </TabsContent>
         <TabsContent value="progress">
-          <ProgressView tasks={tasks} />
+          <ProgressView tasks={tasks} categories={cats.names} />
         </TabsContent>
       </Tabs>
+      )}
     </main>
   );
 }
