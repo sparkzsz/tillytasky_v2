@@ -8,6 +8,7 @@ export type Task = {
   title: string;
   category: Category;
   date: string; // YYYY-MM-DD (day the task belongs to)
+  description: string | null;
   done: boolean;
   completedAt: string | null;
 };
@@ -20,7 +21,6 @@ export const CATEGORY_COLORS: (CategoryStyle & { hex: string; label: string })[]
   { hex: "#A3C1E2", label: "Skies", chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
   { hex: "#FBB28B", label: "Peaches", chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
   { hex: "#F76F54", label: "Poppy", chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
-  { hex: "#F7E289", label: "Daffodil", chip: "bg-daffodil text-night", dot: "bg-daffodil", chart: "var(--daffodil)" },
   { hex: "#EA5E86", label: "Fuchsia", chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
   { hex: "#47B5A8", label: "Pool", chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
   { hex: "#F9A2C5", label: "Cotton candy", chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
@@ -82,7 +82,7 @@ function load(): Task[] {
     const parsed = raw ? (JSON.parse(raw) as unknown[]) : [];
     return parsed
       .map((item) => {
-        const t = item as Task;
+        const t = { description: null, ...(item as Task) } as Task;
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
         }
@@ -116,6 +116,7 @@ export function useTasks() {
         title,
         category,
         date,
+        description: null,
         done: false,
         completedAt: null,
       },
@@ -137,7 +138,7 @@ export function useTasks() {
   }, []);
 
   const updateTask = useCallback(
-    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date">>) => {
+    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date" | "description">>) => {
       setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
     },
     [],
