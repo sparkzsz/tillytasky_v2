@@ -1,20 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const CATEGORIES = [
-  "I 320U",
-  "I 372",
-  "I 320D",
-  "ADV 373",
-  "School",
-  "Job Applied",
-  "Recruiting",
-  "Workout",
-  "Read",
-  "Self-care",
-  "General",
-] as const;
-
-export type Category = (typeof CATEGORIES)[number];
+/** A category is just its user-created name; the list lives in the database. */
+export type Category = string;
 
 export type Task = {
   id: string;
@@ -25,19 +12,34 @@ export type Task = {
   completedAt: string | null;
 };
 
-export const CATEGORY_STYLE: Record<Category, { chip: string; dot: string; chart: string }> = {
-  "I 320U": { chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
-  "I 372": { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
-  "I 320D": { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
-  "ADV 373": { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
-  "School": { chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
-  "Job Applied": { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
-  "Recruiting": { chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
-  "Workout": { chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
-  "Read": { chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
-  "Self-care": { chip: "bg-eggplant text-daffodil", dot: "bg-eggplant", chart: "var(--eggplant)" },
-  "General": { chip: "bg-muted text-muted-foreground", dot: "bg-muted", chart: "var(--muted)" },
+type CategoryStyle = { chip: string; dot: string; chart: string };
+
+const PALETTE: CategoryStyle[] = [
+  { chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  { chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
+  { chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
+  { chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
+  { chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
+  { chip: "bg-lavender text-night", dot: "bg-lavender", chart: "var(--lavender)" },
+  { chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
+  { chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
+  { chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
+  { chip: "bg-eggplant text-daffodil", dot: "bg-eggplant", chart: "var(--eggplant)" },
+];
+
+const FALLBACK: CategoryStyle = {
+  chip: "bg-muted text-muted-foreground",
+  dot: "bg-muted",
+  chart: "var(--muted)",
 };
+
+/** Stable color per category name, so colors stay consistent across views. */
+export function categoryStyle(name: Category | null | undefined): CategoryStyle {
+  if (!name) return FALLBACK;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 100000;
+  return PALETTE[hash % PALETTE.length] ?? FALLBACK;
+}
 
 export function toKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -60,9 +62,6 @@ function load(): Task[] {
         const t = item as Task;
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
-        }
-        if (!CATEGORIES.includes(t.category)) {
-          return { ...t, category: "General" } as Task;
         }
         return t;
       })

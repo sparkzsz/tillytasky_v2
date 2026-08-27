@@ -11,19 +11,20 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CATEGORIES, CATEGORY_STYLE, type Category, type Task } from "@/lib/tally";
+import { categoryStyle, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  categories: Category[];
   task: Task | null;
   onClose: () => void;
   onSave: (id: string, patch: { title: string; category: Category; date: string }) => void;
 };
 
-export function EditTaskDialog({ task, onClose, onSave }: Props) {
+export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
-  const [category, setCategory] = useState<Category>(CATEGORIES[0]);
+  const [category, setCategory] = useState<Category>("");
 
   useEffect(() => {
     if (!task) return;
@@ -36,9 +37,11 @@ export function EditTaskDialog({ task, onClose, onSave }: Props) {
     if (!task) return;
     const trimmed = title.trim();
     if (!trimmed) return;
-    onSave(task.id, { title: trimmed, category, date: date || task.date });
+    onSave(task.id, { title: trimmed, category: category || task.category, date: date || task.date });
     onClose();
   }
+
+  const options = category && !categories.includes(category) ? [category, ...categories] : categories;
 
   return (
     <Dialog open={!!task} onOpenChange={(v) => !v && onClose()}>
@@ -71,14 +74,14 @@ export function EditTaskDialog({ task, onClose, onSave }: Props) {
           <div className="space-y-2">
             <Label>Category</Label>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((c) => (
+              {options.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setCategory(c)}
                   className={cn(
                     "chip-outline px-3 py-1 text-sm",
-                    category === c ? CATEGORY_STYLE[c].chip : "bg-transparent",
+                    category === c ? categoryStyle(c).chip : "bg-transparent",
                   )}
                 >
                   {c}

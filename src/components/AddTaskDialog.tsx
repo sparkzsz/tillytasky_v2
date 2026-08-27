@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -13,23 +13,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CATEGORIES, CATEGORY_STYLE, type Category } from "@/lib/tally";
+import { categoryStyle, type Category } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  categories: Category[];
   onAdd: (title: string, category: Category, date: string) => void;
   defaultDate: string;
 };
 
-export function AddTaskDialog({ onAdd, defaultDate }: Props) {
+export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
-  const [category, setCategory] = useState<Category>(CATEGORIES[0]);
+  const [category, setCategory] = useState<Category>(categories[0] ?? "");
+
+  useEffect(() => {
+    if (!categories.includes(category)) setCategory(categories[0] ?? "");
+  }, [categories, category]);
 
   function submit() {
     const trimmed = title.trim();
-    if (!trimmed) return;
+    if (!trimmed || !category) return;
     onAdd(trimmed, category, date || defaultDate);
     setTitle("");
     setDate(defaultDate);
@@ -78,27 +83,33 @@ export function AddTaskDialog({ onAdd, defaultDate }: Props) {
           </div>
           <div className="space-y-2">
             <Label>Category</Label>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setCategory(c)}
-                  className={cn(
-                    "chip-outline px-3 py-1 text-sm",
-                    category === c ? CATEGORY_STYLE[c].chip : "bg-transparent",
-                  )}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
+            {categories.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Create a category in the Categories tab first.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {categories.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCategory(c)}
+                    className={cn(
+                      "chip-outline px-3 py-1 text-sm",
+                      category === c ? categoryStyle(c).chip : "bg-transparent",
+                    )}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter>
           <Button
             onClick={submit}
-            disabled={!title.trim()}
+            disabled={!title.trim() || !category}
             className="border-2 border-foreground font-display"
           >
             Add it
