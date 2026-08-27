@@ -232,7 +232,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                       <DropdownMenuItem onClick={() => setEditing(t)}>
                         <Pencil className="mr-2 size-4" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onAdd(t.title, t.category, t.date)}>
+                      <DropdownMenuItem onClick={() => onAdd(t.title, t.category, t.date, t.description)}>
                         <Copy className="mr-2 size-4" /> Duplicate
                       </DropdownMenuItem>
                     </DropdownMenuContent>
