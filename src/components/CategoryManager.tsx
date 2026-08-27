@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, GripVertical, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ type Props = {
   onUpdate: (id: string, name: string, color?: string | null) => Promise<string | null>;
   onRemove: (id: string) => Promise<string | null>;
   /** Reorders the category list used by Today, Tasks and Progress. */
-  onMove?: (id: string, dir: -1 | 1) => void;
+  onReorder?: (ids: string[]) => void;
   /** Onboarding mode: login-page styling + Finish action instead of a plain list. */
   onboarding?: boolean;
   onFinish?: () => void;
@@ -74,7 +74,7 @@ export function CategoryManager({
   onCreate,
   onUpdate,
   onRemove,
-  onMove,
+  onReorder,
   onboarding = false,
   onFinish,
 }: Props) {
@@ -86,6 +86,34 @@ export function CategoryManager({
   const [editingName, setEditingName] = useState("");
   const [editingColor, setEditingColor] = useState(DEFAULT_CATEGORY_COLOR);
   const [confirming, setConfirming] = useState<UserCategory | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+
+  const canDrag = !!onReorder && categories.length > 1;
+
+  /** Persists a new order with the category at `from` moved by `dir`. */
+  function moveBy(from: number, dir: -1 | 1) {
+    const to = from + dir;
+    if (!onReorder || to < 0 || to >= categories.length) return;
+    const ids = categories.map((c) => c.id);
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved!);
+    onReorder(ids);
+  }
+
+  function dropOn(targetId: string) {
+    const source = dragId;
+    setDragId(null);
+    setOverId(null);
+    if (!onReorder || !source || source === targetId) return;
+    const ids = categories.map((c) => c.id);
+    const from = ids.indexOf(source);
+    const to = ids.indexOf(targetId);
+    if (from < 0 || to < 0) return;
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved!);
+    onReorder(ids);
+  }
 
   async function run(fn: () => Promise<string | null>) {
     setBusy(true);
@@ -147,7 +175,7 @@ export function CategoryManager({
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Keep your till organized. Group tasks by class, work, habit, and more.
-              {!onboarding && " Use the arrows to set the order shown in Today, Tasks and Progress."}
+              {!onboarding && " Drag the handles to set the order shown in Today, Tasks and Progress."}
             </p>
           </div>
           <span className="chip-outline px-3 py-1 text-sm">
@@ -225,7 +253,34 @@ export function CategoryManager({
           </div>
         )}
         {categories.map((c, i) => (
-          <div key={c.id} className="card-pop p-4">
+          <div
+            key={c.id}
+            draggable={canDrag && editingId !== c.id}
+            onDragStart={(e) => {
+              setDragId(c.id);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onDragEnd={() => {
+              setDragId(null);
+              setOverId(null);
+            }}
+            onDragOver={(e) => {
+              if (!canDrag || !dragId || dragId === c.id) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              setOverId(c.id);
+            }}
+            onDragLeave={() => setOverId((prev) => (prev === c.id ? null : prev))}
+            onDrop={(e) => {
+              e.preventDefault();
+              dropOn(c.id);
+            }}
+            className={cn(
+              "card-pop p-4 transition-opacity",
+              dragId === c.id && "opacity-50",
+              overId === c.id && dragId !== c.id && "ring-2 ring-foreground",
+            )}
+          >
             {editingId === c.id ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
@@ -261,6 +316,26 @@ export function CategoryManager({
               </div>
             ) : (
               <div className="flex items-center gap-3">
+                {canDrag && (
+                  <button
+                    type="button"
+                    aria-label={`Reorder ${c.name}. Use arrow up or arrow down to move.`}
+                    title="Drag to reorder"
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        moveBy(i, -1);
+                      }
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        moveBy(i, 1);
+                      }
+                    }}
+                    className="cursor-grab rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing"
+                  >
+                    <GripVertical className="size-4" />
+                  </button>
+                )}
                 <span
                   className={cn(
                     "rounded-full px-3 py-1 text-sm font-semibold",
@@ -270,28 +345,6 @@ export function CategoryManager({
                   {c.name}
                 </span>
                 <span className="flex-1" />
-                {onMove && (
-                  <>
-                    <button
-                      type="button"
-                      aria-label={`Move ${c.name} up`}
-                      disabled={i === 0}
-                      onClick={() => onMove(c.id, -1)}
-                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
-                    >
-                      <ArrowUp className="size-4" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Move ${c.name} down`}
-                      disabled={i === categories.length - 1}
-                      onClick={() => onMove(c.id, 1)}
-                      className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
-                    >
-                      <ArrowDown className="size-4" />
-                    </button>
-                  </>
-                )}
                 <button
                   type="button"
                   aria-label="Edit category"

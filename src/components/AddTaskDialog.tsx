@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { categoryStyle, type Category } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
+const MAX_DESCRIPTION = 100;
+
 type Props = {
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string) => void;
+  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
   defaultDate: string;
 };
 
@@ -26,6 +29,7 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState<Category>(categories[0] ?? "");
 
   useEffect(() => {
@@ -35,8 +39,9 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   function submit() {
     const trimmed = title.trim();
     if (!trimmed || !category) return;
-    onAdd(trimmed, category, date || defaultDate);
+    onAdd(trimmed, category, date || defaultDate, description.trim() || null);
     setTitle("");
+    setDescription("");
     setDate(defaultDate);
     setOpen(false);
   }
@@ -70,6 +75,22 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") submit();
               }}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="task-description">Description</Label>
+              <span className="text-xs text-muted-foreground">
+                {description.length}/{MAX_DESCRIPTION}
+              </span>
+            </div>
+            <Textarea
+              id="task-description"
+              value={description}
+              maxLength={MAX_DESCRIPTION}
+              rows={3}
+              placeholder="Add a short note (optional)"
+              onChange={(e) => setDescription(e.target.value.slice(0, MAX_DESCRIPTION))}
             />
           </div>
           <div className="space-y-2">

@@ -149,6 +149,15 @@ export function useCategories(sessionUserId: string | undefined) {
     [refresh],
   );
 
+  /** Persists an explicit display order (drag and drop). */
+  const reorder = useCallback(
+    (ids: string[]) => {
+      saveOrder(sessionUserId, ids);
+      setOrder(ids);
+    },
+    [sessionUserId],
+  );
+
   /** Moves a category up (-1) or down (+1) in the user's display order. */
   const move = useCallback(
     (id: string, dir: -1 | 1) => {
@@ -159,10 +168,9 @@ export function useCategories(sessionUserId: string | undefined) {
       const next = [...ids];
       const [moved] = next.splice(from, 1);
       next.splice(to, 0, moved!);
-      saveOrder(sessionUserId, next);
-      setOrder(next);
+      reorder(next);
     },
-    [ordered, sessionUserId],
+    [ordered, reorder],
   );
 
   return {
@@ -176,5 +184,6 @@ export function useCategories(sessionUserId: string | undefined) {
     update,
     remove,
     move,
+    reorder,
   };
 }

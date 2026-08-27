@@ -154,7 +154,7 @@ function Index() {
             onCreate={cats.create}
             onUpdate={cats.update}
             onRemove={cats.remove}
-            onMove={cats.move}
+            onReorder={cats.reorder}
           />
         </TabsContent>
         <TabsContent value="progress">
