@@ -86,6 +86,34 @@ export function CategoryManager({
   const [editingName, setEditingName] = useState("");
   const [editingColor, setEditingColor] = useState(DEFAULT_CATEGORY_COLOR);
   const [confirming, setConfirming] = useState<UserCategory | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+
+  const canDrag = !!onReorder && categories.length > 1;
+
+  /** Persists a new order with the category at `from` moved by `dir`. */
+  function moveBy(from: number, dir: -1 | 1) {
+    const to = from + dir;
+    if (!onReorder || to < 0 || to >= categories.length) return;
+    const ids = categories.map((c) => c.id);
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved!);
+    onReorder(ids);
+  }
+
+  function dropOn(targetId: string) {
+    const source = dragId;
+    setDragId(null);
+    setOverId(null);
+    if (!onReorder || !source || source === targetId) return;
+    const ids = categories.map((c) => c.id);
+    const from = ids.indexOf(source);
+    const to = ids.indexOf(targetId);
+    if (from < 0 || to < 0) return;
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved!);
+    onReorder(ids);
+  }
 
   async function run(fn: () => Promise<string | null>) {
     setBusy(true);
