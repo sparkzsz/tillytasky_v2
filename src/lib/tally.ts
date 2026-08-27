@@ -82,7 +82,8 @@ function load(): Task[] {
     const parsed = raw ? (JSON.parse(raw) as unknown[]) : [];
     return parsed
       .map((item) => {
-        const t = { description: null, ...(item as Task) } as Task;
+        const src = item as Task;
+        const t = { ...src, description: src.description ?? null } as Task;
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
         }
