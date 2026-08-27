@@ -8,7 +8,7 @@ import {
   bestRecord,
   categoryStyle,
   countsByDay,
-  fireEmoji,
+  fireConfetti,
   toKey,
   type Category,
   type Task,
@@ -46,7 +46,7 @@ function handleToggle(task: Task, el: HTMLButtonElement) {
     onToggle(task.id);
     if (!task.done) {
       const rect = el.getBoundingClientRect();
-      fireEmoji(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
   }
 

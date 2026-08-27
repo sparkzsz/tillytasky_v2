@@ -13,7 +13,7 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   categoryStyle,
-  fireEmoji,
+  fireConfetti,
   fromKey,
   toKey,
   type Category,
@@ -111,7 +111,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                       onToggle(t.id);
                       if (!t.done) {
                         const rect = e.currentTarget.getBoundingClientRect();
-                        fireEmoji(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                        fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
                       }
                     }}
                     className={cn(
