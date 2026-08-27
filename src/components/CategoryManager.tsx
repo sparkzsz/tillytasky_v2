@@ -26,7 +26,7 @@ type Props = {
   onUpdate: (id: string, name: string, color?: string | null) => Promise<string | null>;
   onRemove: (id: string) => Promise<string | null>;
   /** Reorders the category list used by Today, Tasks and Progress. */
-  onMove?: (id: string, dir: -1 | 1) => void;
+  onReorder?: (ids: string[]) => void;
   /** Onboarding mode: login-page styling + Finish action instead of a plain list. */
   onboarding?: boolean;
   onFinish?: () => void;
@@ -74,7 +74,7 @@ export function CategoryManager({
   onCreate,
   onUpdate,
   onRemove,
-  onMove,
+  onReorder,
   onboarding = false,
   onFinish,
 }: Props) {
@@ -175,7 +175,7 @@ export function CategoryManager({
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Keep your till organized. Group tasks by class, work, habit, and more.
-              {!onboarding && " Use the arrows to set the order shown in Today, Tasks and Progress."}
+              {!onboarding && " Drag the handles to set the order shown in Today, Tasks and Progress."}
             </p>
           </div>
           <span className="chip-outline px-3 py-1 text-sm">
