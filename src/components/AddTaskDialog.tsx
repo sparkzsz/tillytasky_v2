@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { categoryStyle, type Category } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
+const MAX_DESCRIPTION = 100;
+
 type Props = {
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string) => void;
+  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
   defaultDate: string;
 };
 
@@ -26,6 +29,7 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState<Category>(categories[0] ?? "");
 
   useEffect(() => {
@@ -35,8 +39,9 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   function submit() {
     const trimmed = title.trim();
     if (!trimmed || !category) return;
-    onAdd(trimmed, category, date || defaultDate);
+    onAdd(trimmed, category, date || defaultDate, description.trim() || null);
     setTitle("");
+    setDescription("");
     setDate(defaultDate);
     setOpen(false);
   }
