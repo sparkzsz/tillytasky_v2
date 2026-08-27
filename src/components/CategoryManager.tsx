@@ -172,7 +172,7 @@ export function CategoryManager({
                   key={s}
                   type="button"
                   disabled={busy}
-                  onClick={() => void add(s, newColor)}
+                  onClick={() => setNewName(s)}
                   className="chip-outline flex items-center gap-1.5 px-3 py-1 text-sm hover:bg-muted"
                 >
                   <Plus className="size-3.5" />
@@ -294,17 +294,6 @@ export function CategoryManager({
 
   const body = onboarding ? (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-6 px-4 py-10">
-      <div className="flex items-center gap-3">
-        <img
-          src="/tillytasky_logo_transparent.png"
-          alt="TillyTasky jar logo"
-          className="h-16 w-auto object-contain"
-        />
-        <div>
-          <h1 className="font-display text-3xl leading-none">TillyTasky</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Stack tasks in your till</p>
-        </div>
-      </div>
       {panel}
     </main>
   ) : (
