@@ -17,6 +17,7 @@ import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   categoryStyle,
   fireConfetti,
+  formatDay,
   fromKey,
   toKey,
   type Category,
