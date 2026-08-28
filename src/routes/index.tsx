@@ -29,11 +29,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { tasks, addTask, toggleTask, removeTask, updateTask } = useTasks();
+  const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks } = useTasks();
   const { theme, toggleTheme } = useTheme();
   const { session, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const cats = useCategories(session?.user.id);
+  const { displayName, setDisplayName } = useDisplayName(session?.user.id);
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
@@ -46,6 +47,15 @@ function Index() {
     await signOut();
     void navigate({ to: "/login", replace: true });
   }
+
+  async function handleResetEverything() {
+    clearTasks();
+    for (const c of cats.categories) await cats.remove(c.id);
+    cats.reorder([]);
+    setSetupDone(false);
+    setTab("today");
+  }
+
 
   if (loading || !session) {
     return (
