@@ -73,6 +73,16 @@ export function fromKey(key: string) {
   return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
+/** "Aug 21, 2026" */
+export function formatDay(key: string) {
+  return fromKey(key).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+
 const STORAGE_KEY = "task-tallier.tasks.v1";
 
 function load(): Task[] {
