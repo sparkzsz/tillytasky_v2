@@ -9,6 +9,7 @@ import {
   categoryStyle,
   countsByDay,
   fireConfetti,
+  formatDay,
   toKey,
   type Category,
   type Task,
