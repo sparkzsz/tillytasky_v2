@@ -10,8 +10,9 @@ In the day-detail popup, the task list gets a max height (about 60% of the viewp
 A gear button joins the light/dark toggle and log-out button in the hero, opening a Settings dialog with:
 
 - **Display name** — text input (max ~24 chars), saved per user in the browser. When set, the hero subtitle reads `Hi, [NAME]! Let's stack tasks in your till.`; when blank it stays `Stack tasks in your till.`
-- **Export data** — two buttons, `.csv` and `.xlsx`. Columns in this exact order: `Done, Task, Category, Date`. `Done` exports as the text `Yes` / `No`. File name like `tillytasky-tasks-2026-08-28.csv`.
-- **Reset data** — deletes all tasks after a confirmation step (typed/confirm dialog so it can't be hit by accident). Categories are left untouched; the confirmation makes clear only tasks are cleared.
+- **Export data** — first pick a range: Day (today), Week (current week), Month (current month), or All tasks. Then pick a format: `.csv` or `.xlsx`. Columns in this exact order: `Done, Task, Category, Date`. `Done` exports as the text `Yes` / `No`. File name reflects the range, e.g. `tillytasky-tasks-month-2026-08.csv`.
+- **Reset data** — choose what to clear: **Tasks only** or **Everything (tasks and categories)**. Either choice requires an explicit confirmation step showing exactly what will be deleted. Clearing everything also removes the saved category order and sends the user back to category onboarding.
+
 
 ## 4. Today tab — all-time record card
 The record card's helper line shows the date the record was set, formatted `Aug 21, 2026`, instead of `Beat # to set a new one`. If today is already the record, it shows a "new record in progress" style line; if there are no completed tasks yet, it shows a neutral placeholder.
