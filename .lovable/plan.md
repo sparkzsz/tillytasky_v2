@@ -22,5 +22,6 @@ The record card's helper line shows the date the record was set, formatted `Aug 
 - Overview: add `max-h-[60vh] overflow-y-auto` to the list container in `OverviewView.tsx`.
 - Settings: new `src/components/SettingsDialog.tsx`; display name persisted via a small `useDisplayName(userId)` hook in `src/lib/tally.ts` using localStorage (same storage approach as theme and category order).
 - Export: CSV built by hand (quoted fields). XLSX via the `xlsx` (SheetJS) package added as a dependency, generated in the browser.
-- Reset: add a `clearTasks()` action to `useTasks` in `src/lib/tally.ts`, wired from the Settings dialog through `src/routes/index.tsx`.
+- Reset: add a `clearTasks()` action to `useTasks` in `src/lib/tally.ts`; "everything" also deletes each category through `useCategories.remove` and clears the stored order key, wired from the Settings dialog through `src/routes/index.tsx`.
+- Export range: filter tasks by date key against today / current week (Sun–Sat) / current month before writing the file.
 - Record date: use the existing `bestRecord(tasks)` `bestDate` value in `TodayView.tsx`, formatted with `toLocaleDateString` (`{ month: "short", day: "numeric", year: "numeric" }`).
