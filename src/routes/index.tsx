@@ -72,7 +72,11 @@ function Index() {
         <header className="mb-6 flex items-stretch justify-between gap-4">
           <div className="flex flex-col justify-between">
             <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {displayName
+                ? `Hi, ${displayName}! Let's stack tasks in your till.`
+                : "Stack tasks in your till."}
+            </p>
           </div>
           <div className="flex items-start gap-3 self-stretch">
             <button
@@ -83,6 +87,13 @@ function Index() {
             >
               {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </button>
+            <SettingsDialog
+              tasks={tasks}
+              displayName={displayName}
+              onDisplayNameChange={setDisplayName}
+              onResetTasks={clearTasks}
+              onResetEverything={handleResetEverything}
+            />
             <button
               type="button"
               onClick={handleSignOut}
