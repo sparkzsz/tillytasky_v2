@@ -131,7 +131,7 @@ export function OverviewView({ tasks, categories }: Props) {
       </div>
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent>
+        <DialogContent className="flex max-h-[85vh] flex-col">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">
               {selected
