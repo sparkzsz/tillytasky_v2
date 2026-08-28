@@ -94,7 +94,7 @@ function handleToggle(task: Task, el: HTMLButtonElement) {
             <Trophy className="size-6 text-accent" />
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            {completed > toBeat ? "New record in progress!" : `Beat ${toBeat} to set a new one`}
+            {recordNote}
           </p>
         </div>
       </div>
