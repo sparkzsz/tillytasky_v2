@@ -17,6 +17,7 @@ import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   categoryStyle,
   fireConfetti,
+  formatDay,
   fromKey,
   toKey,
   type Category,
@@ -54,9 +55,20 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
         (t) =>
           t.title.toLowerCase().includes(q) ||
           (t.description ?? "").toLowerCase().includes(q) ||
-          t.category.toLowerCase().includes(q),
+          t.category.toLowerCase().includes(q) ||
+          t.date.includes(q) ||
+          formatDay(t.date).toLowerCase().includes(q) ||
+          fromKey(t.date)
+            .toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
+            .toLowerCase()
+            .includes(q) ||
+          fromKey(t.date)
+            .toLocaleDateString(undefined, { month: "2-digit", day: "2-digit", year: "numeric" })
+            .toLowerCase()
+            .includes(q),
       );
     }
+
     const { key, dir } = sort;
     return [...base].sort((a, b) => {
       let cmp = 0;
@@ -103,8 +115,8 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tasks…"
-            aria-label="Search tasks"
+            placeholder="Search tasks or dates…"
+            aria-label="Search tasks or dates"
             className="pl-9"
           />
         </div>

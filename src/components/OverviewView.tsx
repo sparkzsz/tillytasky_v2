@@ -131,7 +131,7 @@ export function OverviewView({ tasks, categories }: Props) {
       </div>
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent>
+        <DialogContent className="flex max-h-[85vh] flex-col">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">
               {selected
@@ -146,7 +146,7 @@ export function OverviewView({ tasks, categories }: Props) {
               {selectedTasks.length} task{selectedTasks.length === 1 ? "" : "s"} on this day
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-1">
             {selectedTasks.length === 0 && (
               <p className="py-6 text-center text-sm text-muted-foreground">
                 Nothing in your till for this day.

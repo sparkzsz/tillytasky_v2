@@ -9,6 +9,7 @@ import {
   categoryStyle,
   countsByDay,
   fireConfetti,
+  formatDay,
   toKey,
   type Category,
   type Task,
@@ -42,8 +43,15 @@ export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpda
     return toKey(d);
   }, []);
   const yesterday = countsByDay(tasks).get(yesterdayKey) ?? 0;
-  const { best } = bestRecord(tasks, today);
+  const { best, bestDate } = bestRecord(tasks, today);
   const toBeat = Math.max(best, yesterday);
+  const recordNote =
+    completed > toBeat
+      ? "New record in progress!"
+      : bestDate
+        ? `Set on ${formatDay(bestDate)}`
+        : "Complete a task to set your first record";
+
 
 function handleToggle(task: Task, el: HTMLButtonElement) {
     onToggle(task.id);
@@ -86,7 +94,7 @@ function handleToggle(task: Task, el: HTMLButtonElement) {
             <Trophy className="size-6 text-accent" />
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            {completed > toBeat ? "New record in progress!" : `Beat ${toBeat} to set a new one`}
+            {recordNote}
           </p>
         </div>
       </div>

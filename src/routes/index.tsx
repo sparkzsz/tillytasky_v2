@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryManager } from "@/components/CategoryManager";
 import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
-import { useTasks, useTheme } from "@/lib/tally";
+import { SettingsDialog } from "@/components/SettingsDialog";
+import { useDisplayName, useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till.";
 const DESCRIPTION =
@@ -29,11 +30,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { tasks, addTask, toggleTask, removeTask, updateTask } = useTasks();
+  const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks } = useTasks();
   const { theme, toggleTheme } = useTheme();
   const { session, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const cats = useCategories(session?.user.id);
+  const { displayName, setDisplayName } = useDisplayName(session?.user.id);
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
@@ -46,6 +48,15 @@ function Index() {
     await signOut();
     void navigate({ to: "/login", replace: true });
   }
+
+  async function handleResetEverything() {
+    clearTasks();
+    for (const c of cats.categories) await cats.remove(c.id);
+    cats.reorder([]);
+    setSetupDone(false);
+    setTab("today");
+  }
+
 
   if (loading || !session) {
     return (
@@ -61,7 +72,11 @@ function Index() {
         <header className="mb-6 flex items-stretch justify-between gap-4">
           <div className="flex flex-col justify-between">
             <h1 className="font-display text-4xl leading-none sm:text-5xl">TillyTasky</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Stack tasks in your till.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {displayName
+                ? `Hi, ${displayName}! Let's stack tasks in your till.`
+                : "Stack tasks in your till."}
+            </p>
           </div>
           <div className="flex items-start gap-3 self-stretch">
             <button
@@ -72,6 +87,13 @@ function Index() {
             >
               {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </button>
+            <SettingsDialog
+              tasks={tasks}
+              displayName={displayName}
+              onDisplayNameChange={setDisplayName}
+              onResetTasks={clearTasks}
+              onResetEverything={handleResetEverything}
+            />
             <button
               type="button"
               onClick={handleSignOut}
