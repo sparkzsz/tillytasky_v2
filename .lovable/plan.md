@@ -10,8 +10,9 @@ In the day-detail popup, the task list gets a max height (about 60% of the viewp
 A gear button joins the light/dark toggle and log-out button in the hero, opening a Settings dialog with:
 
 - **Display name** — text input (max ~24 chars), saved per user in the browser. When set, the hero subtitle reads `Hi, [NAME]! Let's stack tasks in your till.`; when blank it stays `Stack tasks in your till.`
-- **Export data** — two buttons, `.csv` and `.xlsx`. Columns in this exact order: `Done, Task, Category, Date`. `Done` exports as the text `Yes` / `No`. File name like `tillytasky-tasks-2026-08-28.csv`.
-- **Reset data** — deletes all tasks after a confirmation step (typed/confirm dialog so it can't be hit by accident). Categories are left untouched; the confirmation makes clear only tasks are cleared.
+- **Export data** — first pick a range: Day (today), Week (current week), Month (current month), or All tasks. Then pick a format: `.csv` or `.xlsx`. Columns in this exact order: `Done, Task, Category, Date`. `Done` exports as the text `Yes` / `No`. File name reflects the range, e.g. `tillytasky-tasks-month-2026-08.csv`.
+- **Reset data** — choose what to clear: **Tasks only** or **Everything (tasks and categories)**. Either choice requires an explicit confirmation step showing exactly what will be deleted. Clearing everything also removes the saved category order and sends the user back to category onboarding.
+
 
 ## 4. Today tab — all-time record card
 The record card's helper line shows the date the record was set, formatted `Aug 21, 2026`, instead of `Beat # to set a new one`. If today is already the record, it shows a "new record in progress" style line; if there are no completed tasks yet, it shows a neutral placeholder.
@@ -21,5 +22,6 @@ The record card's helper line shows the date the record was set, formatted `Aug 
 - Overview: add `max-h-[60vh] overflow-y-auto` to the list container in `OverviewView.tsx`.
 - Settings: new `src/components/SettingsDialog.tsx`; display name persisted via a small `useDisplayName(userId)` hook in `src/lib/tally.ts` using localStorage (same storage approach as theme and category order).
 - Export: CSV built by hand (quoted fields). XLSX via the `xlsx` (SheetJS) package added as a dependency, generated in the browser.
-- Reset: add a `clearTasks()` action to `useTasks` in `src/lib/tally.ts`, wired from the Settings dialog through `src/routes/index.tsx`.
+- Reset: add a `clearTasks()` action to `useTasks` in `src/lib/tally.ts`; "everything" also deletes each category through `useCategories.remove` and clears the stored order key, wired from the Settings dialog through `src/routes/index.tsx`.
+- Export range: filter tasks by date key against today / current week (Sun–Sat) / current month before writing the file.
 - Record date: use the existing `bestRecord(tasks)` `bestDate` value in `TodayView.tsx`, formatted with `toLocaleDateString` (`{ month: "short", day: "numeric", year: "numeric" }`).
