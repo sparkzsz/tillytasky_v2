@@ -158,8 +158,38 @@ export function useTasks() {
     [],
   );
 
-  return { tasks, hydrated, addTask, toggleTask, removeTask, updateTask };
+  const clearTasks = useCallback(() => {
+    setTasks([]);
+  }, []);
+
+  return { tasks, hydrated, addTask, toggleTask, removeTask, updateTask, clearTasks };
 }
+
+const DISPLAY_NAME_KEY = "tillytasky.display-name.v1";
+
+/** Display name for the hero greeting, stored per user in the browser. */
+export function useDisplayName(userId: string | undefined) {
+  const [displayName, setName] = useState("");
+
+  useEffect(() => {
+    if (!userId) return;
+    setName(window.localStorage.getItem(`${DISPLAY_NAME_KEY}.${userId}`) ?? "");
+  }, [userId]);
+
+  const setDisplayName = useCallback(
+    (value: string) => {
+      const next = value.trim().slice(0, 24);
+      setName(next);
+      if (!userId) return;
+      if (next) window.localStorage.setItem(`${DISPLAY_NAME_KEY}.${userId}`, next);
+      else window.localStorage.removeItem(`${DISPLAY_NAME_KEY}.${userId}`);
+    },
+    [userId],
+  );
+
+  return { displayName, setDisplayName };
+}
+
 
 export function countsByDay(tasks: Task[]) {
   const map = new Map<string, number>();
