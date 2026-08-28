@@ -115,8 +115,8 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tasks…"
-            aria-label="Search tasks"
+            placeholder="Search tasks or dates…"
+            aria-label="Search tasks or dates"
             className="pl-9"
           />
         </div>
