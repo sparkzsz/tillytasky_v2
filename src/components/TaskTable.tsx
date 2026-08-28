@@ -54,9 +54,20 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
         (t) =>
           t.title.toLowerCase().includes(q) ||
           (t.description ?? "").toLowerCase().includes(q) ||
-          t.category.toLowerCase().includes(q),
+          t.category.toLowerCase().includes(q) ||
+          t.date.includes(q) ||
+          formatDay(t.date).toLowerCase().includes(q) ||
+          fromKey(t.date)
+            .toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
+            .toLowerCase()
+            .includes(q) ||
+          fromKey(t.date)
+            .toLocaleDateString(undefined, { month: "2-digit", day: "2-digit", year: "numeric" })
+            .toLowerCase()
+            .includes(q),
       );
     }
+
     const { key, dir } = sort;
     return [...base].sort((a, b) => {
       let cmp = 0;
