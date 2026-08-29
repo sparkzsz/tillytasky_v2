@@ -42,6 +42,8 @@ const RANGES: { value: ExportRange; label: string }[] = [
 export function SettingsDialog({
   tasks,
   displayName,
+  logo,
+  onLogoChange,
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
