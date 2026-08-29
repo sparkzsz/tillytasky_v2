@@ -3,7 +3,7 @@ import { formatDay, toKey, type Task } from "./tally";
 export type ExportRange = "day" | "week" | "month" | "all";
 export type ExportFormat = "csv" | "xlsx";
 
-const HEADERS = ["Done", "Task", "Category", "Date"] as const;
+const HEADERS = ["Done", "Task", "Description", "Category", "Date"] as const;
 
 function startOfWeek(d: Date) {
   const out = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -46,7 +46,7 @@ export function filterByRange(tasks: Task[], range: ExportRange) {
 function rows(tasks: Task[]) {
   return [...tasks]
     .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
-    .map((t) => [t.done ? "Yes" : "No", t.title, t.category, formatDay(t.date)]);
+    .map((t) => [t.done ? "Yes" : "No", t.title, t.description || "N/A", t.category, formatDay(t.date)]);
 }
 
 function fileName(range: ExportRange, ext: ExportFormat) {
@@ -83,7 +83,7 @@ export async function exportTasks(tasks: Task[], range: ExportRange, format: Exp
 
   const XLSX = await import("xlsx");
   const sheet = XLSX.utils.aoa_to_sheet(data);
-  sheet["!cols"] = [{ wch: 8 }, { wch: 40 }, { wch: 18 }, { wch: 14 }];
+  sheet["!cols"] = [{ wch: 8 }, { wch: 40 }, { wch: 40 }, { wch: 18 }, { wch: 14 }];
   const book = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(book, sheet, "Tasks");
   const out = XLSX.write(book, { bookType: "xlsx", type: "array" }) as ArrayBuffer;

@@ -122,7 +122,7 @@ export function SettingsDialog({
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Shown in the hero greeting. Leave blank to hide it.
+                Personalize your till with a greeting shown at the top.
               </p>
             </section>
 
