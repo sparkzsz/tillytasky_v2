@@ -127,6 +127,30 @@ export function SettingsDialog({
             </section>
 
             <section className="space-y-3 border-t-2 border-border pt-5">
+              <p className="font-display text-base">Logo color</p>
+              <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label="Logo color">
+                {LOGO_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={logo === o.value}
+                    onClick={() => onLogoChange(o.value)}
+                    className={cn(
+                      "flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-colors",
+                      logo === o.value
+                        ? "border-foreground bg-secondary"
+                        : "border-border hover:bg-muted",
+                    )}
+                  >
+                    <img src={o.src} alt={`${o.label} TillyTasky logo`} className="h-12 w-auto object-contain" />
+                    <span className="text-xs">{o.label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-3 border-t-2 border-border pt-5">
               <p className="font-display text-base">Export data</p>
               <div className="space-y-2">
                 <Label htmlFor="export-range" className="text-xs uppercase tracking-widest text-muted-foreground">
