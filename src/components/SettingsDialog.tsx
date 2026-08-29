@@ -19,12 +19,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { exportTasks, rangeLabel, filterByRange, type ExportRange } from "@/lib/export";
-import type { Task } from "@/lib/tally";
+import { LOGO_OPTIONS, type LogoVariant, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
   tasks: Task[];
   displayName: string;
+  logo: LogoVariant;
+  onLogoChange: (value: LogoVariant) => void;
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
