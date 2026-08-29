@@ -112,12 +112,17 @@ function load(): Task[] {
     return parsed
       .map((item) => {
         const src = item as Task;
-        const t = { ...src, description: src.description ?? null } as Task;
+        const t = {
+          ...src,
+          description: src.description ?? null,
+          important: src.important === true,
+        } as Task;
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
         }
         return t;
       })
+
       .filter((t) => t.title && t.date);
   } catch {
     return [];
