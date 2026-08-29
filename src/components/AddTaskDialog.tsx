@@ -21,7 +21,13 @@ const MAX_DESCRIPTION = 100;
 
 type Props = {
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
+  onAdd: (
+    title: string,
+    category: Category,
+    date: string,
+    description?: string | null,
+    important?: boolean,
+  ) => void;
   defaultDate: string;
 };
 
@@ -30,6 +36,7 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
   const [description, setDescription] = useState("");
+  const [important, setImportant] = useState(false);
   const [category, setCategory] = useState<Category>(categories[0] ?? "");
 
   useEffect(() => {
@@ -39,12 +46,14 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   function submit() {
     const trimmed = title.trim();
     if (!trimmed || !category) return;
-    onAdd(trimmed, category, date || defaultDate, description.trim() || null);
+    onAdd(trimmed, category, date || defaultDate, description.trim() || null, important);
     setTitle("");
     setDescription("");
+    setImportant(false);
     setDate(defaultDate);
     setOpen(false);
   }
+
 
   return (
     <Dialog
@@ -126,6 +135,25 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
               </div>
             )}
           </div>
+          <div className="space-y-2">
+            <Label>Mark important? ❗️</Label>
+            <div className="flex gap-2">
+              {[true, false].map((v) => (
+                <button
+                  key={String(v)}
+                  type="button"
+                  onClick={() => setImportant(v)}
+                  className={cn(
+                    "chip-outline px-3 py-1 text-sm",
+                    important === v ? "bg-accent text-accent-foreground" : "bg-transparent",
+                  )}
+                >
+                  {v ? "Yes" : "No"}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
         <DialogFooter>
           <Button

@@ -9,9 +9,26 @@ export type Task = {
   category: Category;
   date: string; // YYYY-MM-DD (day the task belongs to)
   description: string | null;
+  important: boolean;
   done: boolean;
   completedAt: string | null;
 };
+
+/** "❗️ Task" when marked important. */
+export function displayTitle(task: Pick<Task, "title" | "important">) {
+  return task.important ? `❗️ ${task.title}` : task.title;
+}
+
+/** Groups tasks by the user's category order, alphabetical by title inside each group. */
+export function sortTasksByCategory(tasks: Task[], categoryOrder: Category[]) {
+  const rank = new Map(categoryOrder.map((c, i) => [c.toLowerCase(), i]));
+  return [...tasks].sort((a, b) => {
+    const ra = rank.get(a.category.toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+    const rb = rank.get(b.category.toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+    if (ra !== rb) return ra - rb;
+    return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+  });
+}
 
 type CategoryStyle = { chip: string; dot: string; chart: string };
 
@@ -21,12 +38,14 @@ export const CATEGORY_COLORS: (CategoryStyle & { hex: string; label: string })[]
   { hex: "#A3C1E2", label: "Skies", chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
   { hex: "#FBB28B", label: "Peaches", chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
   { hex: "#F76F54", label: "Poppy", chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  { hex: "#A9AF94", label: "Sage", chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
   { hex: "#EA5E86", label: "Fuchsia", chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
   { hex: "#47B5A8", label: "Pool", chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
   { hex: "#F9A2C5", label: "Cotton candy", chip: "bg-cotton text-night", dot: "bg-cotton", chart: "var(--cotton)" },
   { hex: "#6B515E", label: "Eggplant", chip: "bg-eggplant text-daffodil", dot: "bg-eggplant", chart: "var(--eggplant)" },
   { hex: "#B79A65", label: "Hay", chip: "bg-hay text-night", dot: "bg-hay", chart: "var(--hay)" },
 ];
+
 
 export const DEFAULT_CATEGORY_COLOR = CATEGORY_COLORS[0]!.hex;
 
@@ -93,12 +112,17 @@ function load(): Task[] {
     return parsed
       .map((item) => {
         const src = item as Task;
-        const t = { ...src, description: src.description ?? null } as Task;
+        const t = {
+          ...src,
+          description: src.description ?? null,
+          important: src.important === true,
+        } as Task;
         if ((t.category as string) === "School Misc") {
           return { ...t, category: "School" } as Task;
         }
         return t;
       })
+
       .filter((t) => t.title && t.date);
   } catch {
     return [];
@@ -120,7 +144,13 @@ export function useTasks() {
   }, [tasks, hydrated]);
 
   const addTask = useCallback(
-    (title: string, category: Category, date: string, description?: string | null) => {
+    (
+      title: string,
+      category: Category,
+      date: string,
+      description?: string | null,
+      important?: boolean,
+    ) => {
     setTasks((prev) => [
       ...prev,
       {
@@ -129,6 +159,7 @@ export function useTasks() {
         category,
         date,
         description: description?.trim() ? description.trim().slice(0, 100) : null,
+        important: important === true,
         done: false,
         completedAt: null,
       },
@@ -136,6 +167,7 @@ export function useTasks() {
     },
     [],
   );
+
 
   const toggleTask = useCallback((id: string) => {
     setTasks((prev) =>
@@ -152,7 +184,7 @@ export function useTasks() {
   }, []);
 
   const updateTask = useCallback(
-    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date" | "description">>) => {
+    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date" | "description" | "important">>) => {
       setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
     },
     [],

@@ -23,7 +23,13 @@ type Props = {
   onClose: () => void;
   onSave: (
     id: string,
-    patch: { title: string; category: Category; date: string; description: string | null },
+    patch: {
+      title: string;
+      category: Category;
+      date: string;
+      description: string | null;
+      important: boolean;
+    },
   ) => void;
 };
 
@@ -32,6 +38,7 @@ export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
   const [date, setDate] = useState("");
   const [category, setCategory] = useState<Category>("");
   const [description, setDescription] = useState("");
+  const [important, setImportant] = useState(false);
 
   useEffect(() => {
     if (!task) return;
@@ -39,6 +46,7 @@ export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
     setDate(task.date);
     setCategory(task.category);
     setDescription(task.description ?? "");
+    setImportant(task.important === true);
   }, [task]);
 
   function save() {
@@ -50,9 +58,11 @@ export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
       category: category || task.category,
       date: date || task.date,
       description: description.trim() ? description.trim().slice(0, MAX_DESCRIPTION) : null,
+      important,
     });
     onClose();
   }
+
 
   const options = category && !categories.includes(category) ? [category, ...categories] : categories;
 
@@ -118,6 +128,25 @@ export function EditTaskDialog({ categories, task, onClose, onSave }: Props) {
               ))}
             </div>
           </div>
+          <div className="space-y-2">
+            <Label>Mark important? ❗️</Label>
+            <div className="flex gap-2">
+              {[true, false].map((v) => (
+                <button
+                  key={String(v)}
+                  type="button"
+                  onClick={() => setImportant(v)}
+                  className={cn(
+                    "chip-outline px-3 py-1 text-sm",
+                    important === v ? "bg-accent text-accent-foreground" : "bg-transparent",
+                  )}
+                >
+                  {v ? "Yes" : "No"}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
         <DialogFooter>
           <Button
