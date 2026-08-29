@@ -222,6 +222,42 @@ export function useDisplayName(userId: string | undefined) {
   return { displayName, setDisplayName };
 }
 
+const LOGO_KEY = "tillytasky.logo.v1";
+
+export type LogoVariant = "default" | "peach" | "pink" | "purple";
+
+export const LOGO_OPTIONS: { value: LogoVariant; label: string; src: string }[] = [
+  { value: "default", label: "Default", src: "/tillytasky_logo_default.png" },
+  { value: "peach", label: "Peach", src: "/tillytasky_logo_peach.png" },
+  { value: "pink", label: "Pink", src: "/tillytasky_logo_pink.png" },
+  { value: "purple", label: "Purple", src: "/tillytasky_logo_purple.png" },
+];
+
+export function logoSrc(variant: LogoVariant) {
+  return (LOGO_OPTIONS.find((o) => o.value === variant) ?? LOGO_OPTIONS[0]!).src;
+}
+
+/** Logo color choice, stored per user in the browser. */
+export function useLogoVariant(userId: string | undefined) {
+  const [logo, setLogoState] = useState<LogoVariant>("default");
+
+  useEffect(() => {
+    if (!userId) return;
+    const stored = window.localStorage.getItem(`${LOGO_KEY}.${userId}`) as LogoVariant | null;
+    setLogoState(stored && LOGO_OPTIONS.some((o) => o.value === stored) ? stored : "default");
+  }, [userId]);
+
+  const setLogo = useCallback(
+    (value: LogoVariant) => {
+      setLogoState(value);
+      if (userId) window.localStorage.setItem(`${LOGO_KEY}.${userId}`, value);
+    },
+    [userId],
+  );
+
+  return { logo, setLogo, src: logoSrc(logo) };
+}
+
 
 export function countsByDay(tasks: Task[]) {
   const map = new Map<string, number>();
