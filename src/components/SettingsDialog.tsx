@@ -19,12 +19,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { exportTasks, rangeLabel, filterByRange, type ExportRange } from "@/lib/export";
-import type { Task } from "@/lib/tally";
+import { LOGO_OPTIONS, type LogoVariant, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 type Props = {
   tasks: Task[];
   displayName: string;
+  logo: LogoVariant;
+  onLogoChange: (value: LogoVariant) => void;
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
@@ -40,6 +42,8 @@ const RANGES: { value: ExportRange; label: string }[] = [
 export function SettingsDialog({
   tasks,
   displayName,
+  logo,
+  onLogoChange,
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
@@ -124,6 +128,30 @@ export function SettingsDialog({
               <p className="text-xs text-muted-foreground">
                 Personalize your till with a greeting shown at the top.
               </p>
+            </section>
+
+            <section className="space-y-3 border-t-2 border-border pt-5">
+              <p className="font-display text-base">Logo color</p>
+              <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label="Logo color">
+                {LOGO_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={logo === o.value}
+                    onClick={() => onLogoChange(o.value)}
+                    className={cn(
+                      "flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-colors",
+                      logo === o.value
+                        ? "border-foreground bg-secondary"
+                        : "border-border hover:bg-muted",
+                    )}
+                  >
+                    <img src={o.src} alt={`${o.label} TillyTasky logo`} className="h-12 w-auto object-contain" />
+                    <span className="text-xs">{o.label}</span>
+                  </button>
+                ))}
+              </div>
             </section>
 
             <section className="space-y-3 border-t-2 border-border pt-5">

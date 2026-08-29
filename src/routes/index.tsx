@@ -11,7 +11,7 @@ import { CategoryManager } from "@/components/CategoryManager";
 import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
 import { SettingsDialog } from "@/components/SettingsDialog";
-import { useDisplayName, useTasks, useTheme } from "@/lib/tally";
+import { useDisplayName, useLogoVariant, useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till.";
 const DESCRIPTION =
@@ -36,6 +36,7 @@ function Index() {
   const navigate = useNavigate();
   const cats = useCategories(session?.user.id);
   const { displayName, setDisplayName } = useDisplayName(session?.user.id);
+  const { logo, setLogo, src: logoSrcUrl } = useLogoVariant(session?.user.id);
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
@@ -90,6 +91,8 @@ function Index() {
             <SettingsDialog
               tasks={tasks}
               displayName={displayName}
+              logo={logo}
+              onLogoChange={setLogo}
               onDisplayNameChange={setDisplayName}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
@@ -104,7 +107,7 @@ function Index() {
               <LogOut className="size-4" />
             </button>
             <img
-              src="/tillytasky_logo_default.png"
+              src={logoSrcUrl}
               alt="TillyTasky jar logo"
               className="h-full max-h-[104px] w-auto shrink-0 self-stretch object-contain object-right"
             />
@@ -115,6 +118,7 @@ function Index() {
       {needsOnboarding ? (
         <CategoryManager
           onboarding
+          logoSrc={logoSrcUrl}
           onFinish={() => setSetupDone(true)}
           categories={cats.categories}
           loading={cats.loading}

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { categoryStyle, type Category } from "@/lib/tally";
 import { cn } from "@/lib/utils";
@@ -135,23 +136,9 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            <Label>Mark important? ❗️</Label>
-            <div className="flex gap-2">
-              {[true, false].map((v) => (
-                <button
-                  key={String(v)}
-                  type="button"
-                  onClick={() => setImportant(v)}
-                  className={cn(
-                    "chip-outline px-3 py-1 text-sm",
-                    important === v ? "bg-accent text-accent-foreground" : "bg-transparent",
-                  )}
-                >
-                  {v ? "Yes" : "No"}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="task-important">Mark important? ❗️</Label>
+            <Switch id="task-important" checked={important} onCheckedChange={setImportant} />
           </div>
 
         </div>
