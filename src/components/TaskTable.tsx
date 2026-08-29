@@ -16,6 +16,7 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import { EditTaskDialog } from "@/components/EditTaskDialog";
 import {
   categoryStyle,
+  displayTitle,
   fireConfetti,
   formatDay,
   fromKey,
@@ -28,12 +29,24 @@ import { cn } from "@/lib/utils";
 type Props = {
   tasks: Task[];
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
+  onAdd: (
+    title: string,
+    category: Category,
+    date: string,
+    description?: string | null,
+    important?: boolean,
+  ) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
   onUpdate: (
     id: string,
-    patch: { title: string; category: Category; date: string; description: string | null },
+    patch: {
+      title: string;
+      category: Category;
+      date: string;
+      description: string | null;
+      important: boolean;
+    },
   ) => void;
 };
 
@@ -206,7 +219,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                   </button>
                 </td>
                 <td className={cn("p-3 font-semibold", t.done && "line-through opacity-70")}>
-                  {t.title}
+                  {displayTitle(t)}
                   {t.description && (
                     <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
                       {t.description}
@@ -244,7 +257,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
                       <DropdownMenuItem onClick={() => setEditing(t)}>
                         <Pencil className="mr-2 size-4" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onAdd(t.title, t.category, t.date, t.description)}>
+                      <DropdownMenuItem onClick={() => onAdd(t.title, t.category, t.date, t.description, t.important)}>
                         <Copy className="mr-2 size-4" /> Duplicate
                       </DropdownMenuItem>
                     </DropdownMenuContent>

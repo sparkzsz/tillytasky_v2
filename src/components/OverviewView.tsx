@@ -9,7 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { categoryStyle, fromKey, toKey, type Category, type Task } from "@/lib/tally";
+import { categoryStyle,
+  displayTitle, fromKey, toKey, type Category, type Task } from "@/lib/tally";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -166,7 +167,7 @@ export function OverviewView({ tasks, categories }: Props) {
                   {t.done && <Check className="size-4" />}
                 </span>
                 <span className={cn("min-w-0 flex-1 truncate text-sm font-semibold", t.done && "line-through")}>
-                  {t.title}
+                  {displayTitle(t)}
                 </span>
                 <span
                   className={cn(

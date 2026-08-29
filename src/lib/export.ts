@@ -1,4 +1,4 @@
-import { formatDay, toKey, type Task } from "./tally";
+import { displayTitle, formatDay, toKey, type Task } from "./tally";
 
 export type ExportRange = "day" | "week" | "month" | "all";
 export type ExportFormat = "csv" | "xlsx";
@@ -46,7 +46,13 @@ export function filterByRange(tasks: Task[], range: ExportRange) {
 function rows(tasks: Task[]) {
   return [...tasks]
     .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
-    .map((t) => [t.done ? "Yes" : "No", t.title, t.description || "N/A", t.category, formatDay(t.date)]);
+    .map((t) => [
+      t.done ? "Yes" : "No",
+      displayTitle(t),
+      t.description || "N/A",
+      t.category,
+      t.date,
+    ]);
 }
 
 function fileName(range: ExportRange, ext: ExportFormat) {

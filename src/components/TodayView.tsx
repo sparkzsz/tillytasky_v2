@@ -8,7 +8,9 @@ import {
   bestRecord,
   categoryStyle,
   countsByDay,
+  displayTitle,
   fireConfetti,
+  sortTasksByCategory,
   formatDay,
   toKey,
   type Category,
@@ -19,12 +21,24 @@ import { cn } from "@/lib/utils";
 type Props = {
   tasks: Task[];
   categories: Category[];
-  onAdd: (title: string, category: Category, date: string, description?: string | null) => void;
+  onAdd: (
+    title: string,
+    category: Category,
+    date: string,
+    description?: string | null,
+    important?: boolean,
+  ) => void;
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
   onUpdate: (
     id: string,
-    patch: { title: string; category: Category; date: string; description: string | null },
+    patch: {
+      title: string;
+      category: Category;
+      date: string;
+      description: string | null;
+      important: boolean;
+    },
   ) => void;
 };
 
@@ -33,7 +47,10 @@ export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpda
   const [editing, setEditing] = useState<Task | null>(null);
   const today = toKey(new Date());
 
-  const todays = useMemo(() => tasks.filter((t) => t.date === today), [tasks, today]);
+  const todays = useMemo(
+    () => sortTasksByCategory(tasks.filter((t) => t.date === today), categories),
+    [tasks, today, categories],
+  );
   const visible = filter === "all" ? todays : todays.filter((t) => t.category === filter);
   const completed = todays.filter((t) => t.done).length;
 
@@ -134,7 +151,7 @@ function handleToggle(task: Task, el: HTMLButtonElement) {
             </button>
             <div className="min-w-0 flex-1">
               <p className={cn("truncate font-semibold", task.done && "line-through")}>
-                {task.title}
+                {displayTitle(task)}
               </p>
               {task.description && (
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">{task.description}</p>
