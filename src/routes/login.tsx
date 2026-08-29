@@ -57,7 +57,7 @@ function LoginPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
       <div className="mb-6 flex items-center gap-3">
         <img
-          src="/tillytasky_logo_transparent.png"
+          src="/tillytasky_logo_default.png"
           alt="TillyTasky jar logo"
           className="h-16 w-auto object-contain"
         />
