@@ -78,6 +78,7 @@ export function CategoryManager({
   onRemove,
   onReorder,
   onboarding = false,
+  logoSrc,
   onFinish,
 }: Props) {
   const [newName, setNewName] = useState("");
