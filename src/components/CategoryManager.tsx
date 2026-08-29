@@ -29,6 +29,8 @@ type Props = {
   onReorder?: (ids: string[]) => void;
   /** Onboarding mode: login-page styling + Finish action instead of a plain list. */
   onboarding?: boolean;
+  /** Logo image shown in onboarding. */
+  logoSrc?: string;
   onFinish?: () => void;
 };
 
@@ -153,7 +155,7 @@ export function CategoryManager({
       {onboarding && (
         <div className="mb-6 flex items-center gap-3">
           <img
-            src="/tillytasky_logo_transparent.png"
+            src={logoSrc ?? "/tillytasky_logo_default.png"}
             alt="TillyTasky jar logo"
             className="h-16 w-auto object-contain"
           />
