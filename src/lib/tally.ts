@@ -144,7 +144,13 @@ export function useTasks() {
   }, [tasks, hydrated]);
 
   const addTask = useCallback(
-    (title: string, category: Category, date: string, description?: string | null) => {
+    (
+      title: string,
+      category: Category,
+      date: string,
+      description?: string | null,
+      important?: boolean,
+    ) => {
     setTasks((prev) => [
       ...prev,
       {
@@ -153,6 +159,7 @@ export function useTasks() {
         category,
         date,
         description: description?.trim() ? description.trim().slice(0, 100) : null,
+        important: important === true,
         done: false,
         completedAt: null,
       },
@@ -160,6 +167,7 @@ export function useTasks() {
     },
     [],
   );
+
 
   const toggleTask = useCallback((id: string) => {
     setTasks((prev) =>
