@@ -104,7 +104,7 @@ function Index() {
               <LogOut className="size-4" />
             </button>
             <img
-              src="/tillytasky_logo_transparent.png"
+              src="/tillytasky_logo_default.png"
               alt="TillyTasky jar logo"
               className="h-full max-h-[104px] w-auto shrink-0 self-stretch object-contain object-right"
             />
