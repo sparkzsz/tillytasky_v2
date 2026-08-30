@@ -50,6 +50,8 @@ export function SettingsDialog({
 }: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(displayName);
+  const [lastSavedName, setLastSavedName] = useState(displayName);
+  const [savingName, setSavingName] = useState(false);
   const [range, setRange] = useState<ExportRange>("month");
   const [confirm, setConfirm] = useState<"tasks" | "all" | null>(null);
   const [busy, setBusy] = useState(false);
@@ -57,11 +59,23 @@ export function SettingsDialog({
   useEffect(() => {
     if (open) {
       setName(displayName);
+      setLastSavedName(displayName);
       setConfirm(null);
+      setSavingName(false);
     }
   }, [open, displayName]);
 
   const count = filterByRange(tasks, range).length;
+
+  async function handleSaveName() {
+    setSavingName(true);
+    try {
+      await onDisplayNameChange(name);
+      setLastSavedName(name.trim());
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   async function handleExport(format: "csv" | "xlsx") {
     setBusy(true);
