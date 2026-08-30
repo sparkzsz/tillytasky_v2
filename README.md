@@ -2,13 +2,24 @@
   <img width="320" height="180" alt="tillytasky_banner" src="https://github.com/user-attachments/assets/988ace0d-fb0c-4903-9550-3642bc743aaa">
 </div>
 
-# TillyTasky
+<div align="center">
+  
+  # TillyTasky
+  
+  This is **TillyTasky**. Stack tasks in your till today.
+  
+  This project was built with [Lovable](https://lovable.dev).
+  
+  **Live app**: https://tillytasky.vercel.app/
+</div>
 
-This is **TillyTasky**. Stack tasks in your till today.
+## What is TillyTasky?
 
-This project was built with [Lovable](https://lovable.dev).
+If you love the feeling of checking things off a to-do list, TillyTasky turns getting stuff done into a game where you try to beat your high score from the day before.
 
-**Live app**: https://tillytasky.vercel.app/
+A.k.a. productive dopamine hits. Who doesn’t love that?
+
+Best experienced on desktop. Use TillyTasky for work, school, personal life, and everything in between.
 
 ## Why TillyTasky?
 
