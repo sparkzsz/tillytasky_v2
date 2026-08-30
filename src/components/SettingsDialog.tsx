@@ -131,8 +131,8 @@ export function SettingsDialog({
             </section>
 
             <section className="space-y-3 border-t-2 border-border pt-5">
-              <p className="font-display text-base">Logo color</p>
-              <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label="Logo color">
+              <p className="font-display text-base">Till color</p>
+              <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label="Till color">
                 {LOGO_OPTIONS.map((o) => (
                   <button
                     key={o.value}

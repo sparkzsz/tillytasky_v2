@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, Pencil, Search, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, CalendarIcon, Check, Copy, Pencil, Search, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -8,8 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -58,6 +60,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "date", dir: -1 });
   const [editing, setEditing] = useState<Task | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [moveOpen, setMoveOpen] = useState(false);
   const today = toKey(new Date());
 
   const rows = useMemo(() => {
@@ -108,6 +111,24 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
     setSelected([]);
   }
 
+  function moveSelected(day: Date | undefined) {
+    if (!day) return;
+    const date = toKey(day);
+    tasks
+      .filter((t) => selectedSet.has(t.id))
+      .forEach((t) =>
+        onUpdate(t.id, {
+          title: t.title,
+          category: t.category,
+          date,
+          description: t.description ?? null,
+          important: Boolean(t.important),
+        }),
+      );
+    setMoveOpen(false);
+    setSelected([]);
+  }
+
   const columns: { key: SortKey; label: string; className: string }[] = [
     { key: "done", label: "Done", className: "w-16" },
     { key: "title", label: "Task", className: "" },
@@ -136,6 +157,24 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
         {selected.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">{selected.length} selected</span>
+            <Popover open={moveOpen} onOpenChange={setMoveOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="gap-2 border-2 border-foreground font-display"
+                >
+                  <CalendarIcon className="size-4" /> Move to day
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-auto border-2 border-foreground p-0">
+                <Calendar
+                  mode="single"
+                  onSelect={moveSelected}
+                  initialFocus
+                  className={cn("pointer-events-auto p-3")}
+                />
+              </PopoverContent>
+            </Popover>
             <Button
               variant="destructive"
               onClick={deleteSelected}
