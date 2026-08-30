@@ -102,12 +102,18 @@ export function formatDay(key: string) {
 }
 
 
-const STORAGE_KEY = "task-tallier.tasks.v1";
+/**
+ * Stage 1 migration: tasks now live in public.tasks.
+ * The old localStorage payload below is intentionally left untouched (read-only)
+ * so Stage 2 can migrate it.
+ */
+export const LEGACY_TASKS_STORAGE_KEY = "task-tallier.tasks.v1";
 
-function load(): Task[] {
+/** Reads (never writes) the legacy localStorage tasks, for the Stage 2 migration. */
+export function loadLegacyTasks(): Task[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(LEGACY_TASKS_STORAGE_KEY);
     const parsed = raw ? (JSON.parse(raw) as unknown[]) : [];
     return parsed
       .map((item) => {
@@ -122,26 +128,121 @@ function load(): Task[] {
         }
         return t;
       })
-
       .filter((t) => t.title && t.date);
   } catch {
     return [];
   }
 }
 
+type TaskRow = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  completed: boolean | null;
+  due_date: string | null;
+  completed_at: string | null;
+  important: boolean | null;
+  category_id: string | null;
+};
+
+/** "2026-08-30T00:00:00+00:00" | "2026-08-30 00:00:00+00" -> "2026-08-30" */
+function dayFromTimestamp(value: string | null): string {
+  if (!value) return toKey(new Date());
+  return value.slice(0, 10);
+}
+
+function rowToTask(row: TaskRow, categoryNameById: Map<string, string>): Task {
+  return {
+    id: row.id,
+    title: row.title ?? "",
+    category: (row.category_id ? categoryNameById.get(row.category_id) : "") ?? "",
+    date: dayFromTimestamp(row.due_date),
+    description: row.description ?? null,
+    important: row.important === true,
+    done: row.completed === true,
+    completedAt: row.completed_at ?? null,
+  };
+}
+
+/**
+ * Tasks are stored in public.tasks, scoped to the signed-in user.
+ * The public API is unchanged so components keep working; writes are optimistic
+ * and reconciled from Supabase.
+ */
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const categoriesRef = useRef<{ byId: Map<string, string>; byName: Map<string, string> }>({
+    byId: new Map(),
+    byName: new Map(),
+  });
 
   useEffect(() => {
-    setTasks(load());
-    setHydrated(true);
+    if (!supabase) {
+      setHydrated(true);
+      return;
+    }
+    void supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user.id));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
+      setUserId(session?.user.id),
+    );
+    return () => sub.subscription.unsubscribe();
   }, []);
 
+  /** Rebuilds the category name <-> id maps used to translate between the UI and the table. */
+  const loadCategoryMaps = useCallback(async () => {
+    if (!supabase || !userId) return categoriesRef.current;
+    const { data, error } = await supabase.from("categories").select("id, name").eq("user_id", userId);
+    if (error) {
+      console.error("Failed to load categories for tasks:", error.message);
+      return categoriesRef.current;
+    }
+    const byId = new Map<string, string>();
+    const byName = new Map<string, string>();
+    for (const row of (data ?? []) as { id: string; name: string }[]) {
+      byId.set(row.id, row.name);
+      byName.set(row.name.toLowerCase(), row.id);
+    }
+    categoriesRef.current = { byId, byName };
+    return categoriesRef.current;
+  }, [userId]);
+
+  const categoryIdFor = useCallback(
+    async (name: Category | null | undefined) => {
+      const key = name?.trim().toLowerCase();
+      if (!key) return null;
+      const hit = categoriesRef.current.byName.get(key);
+      if (hit) return hit;
+      const maps = await loadCategoryMaps();
+      return maps.byName.get(key) ?? null;
+    },
+    [loadCategoryMaps],
+  );
+
+  const refresh = useCallback(async () => {
+    if (!supabase || !userId) {
+      setTasks([]);
+      setHydrated(true);
+      return;
+    }
+    const maps = await loadCategoryMaps();
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("id, title, description, completed, due_date, completed_at, important, category_id")
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Failed to load tasks:", error.message);
+      setHydrated(true);
+      return;
+    }
+    setTasks(((data ?? []) as TaskRow[]).map((row) => rowToTask(row, maps.byId)));
+    setHydrated(true);
+  }, [userId, loadCategoryMaps]);
+
   useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [tasks, hydrated]);
+    void refresh();
+  }, [refresh]);
 
   const addTask = useCallback(
     (
@@ -151,9 +252,7 @@ export function useTasks() {
       description?: string | null,
       important?: boolean,
     ) => {
-    setTasks((prev) => [
-      ...prev,
-      {
+      const task: Task = {
         id: crypto.randomUUID(),
         title,
         category,
@@ -162,39 +261,113 @@ export function useTasks() {
         important: important === true,
         done: false,
         completedAt: null,
-      },
-    ]);
+      };
+      setTasks((prev) => [...prev, task]);
+
+      void (async () => {
+        if (!supabase || !userId) return;
+        const category_id = await categoryIdFor(category);
+        const { error } = await supabase.from("tasks").insert({
+          id: task.id,
+          user_id: userId,
+          category_id,
+          title: task.title,
+          description: task.description,
+          completed: task.done,
+          due_date: task.date,
+          completed_at: task.completedAt,
+          important: task.important,
+        });
+        if (error) {
+          console.error("Failed to save task:", error.message);
+          setTasks((prev) => prev.filter((t) => t.id !== task.id));
+        }
+      })();
     },
-    [],
+    [userId, categoryIdFor],
   );
 
+  const toggleTask = useCallback(
+    (id: string) => {
+      let next: Task | undefined;
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (t.id !== id) return t;
+          next = { ...t, done: !t.done, completedAt: t.done ? null : new Date().toISOString() };
+          return next;
+        }),
+      );
 
-  const toggleTask = useCallback((id: string) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, done: !t.done, completedAt: t.done ? null : new Date().toISOString() }
-          : t,
-      ),
-    );
-  }, []);
+      void (async () => {
+        if (!supabase || !userId || !next) return;
+        const { error } = await supabase
+          .from("tasks")
+          .update({ completed: next.done, completed_at: next.completedAt })
+          .eq("id", id)
+          .eq("user_id", userId);
+        if (error) {
+          console.error("Failed to update task:", error.message);
+          void refresh();
+        }
+      })();
+    },
+    [userId, refresh],
+  );
 
-  const removeTask = useCallback((id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  const removeTask = useCallback(
+    (id: string) => {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      void (async () => {
+        if (!supabase || !userId) return;
+        const { error } = await supabase.from("tasks").delete().eq("id", id).eq("user_id", userId);
+        if (error) {
+          console.error("Failed to delete task:", error.message);
+          void refresh();
+        }
+      })();
+    },
+    [userId, refresh],
+  );
 
   const updateTask = useCallback(
-    (id: string, patch: Partial<Pick<Task, "title" | "category" | "date" | "description" | "important">>) => {
+    (
+      id: string,
+      patch: Partial<Pick<Task, "title" | "category" | "date" | "description" | "important">>,
+    ) => {
       setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+
+      void (async () => {
+        if (!supabase || !userId) return;
+        const row: Record<string, unknown> = {};
+        if (patch.title !== undefined) row['title'] = patch.title;
+        if (patch.description !== undefined) row['description'] = patch.description;
+        if (patch.important !== undefined) row['important'] = patch.important;
+        if (patch.date !== undefined) row['due_date'] = patch.date;
+        if (patch.category !== undefined) row['category_id'] = await categoryIdFor(patch.category);
+        if (Object.keys(row).length === 0) return;
+        const { error } = await supabase.from("tasks").update(row).eq("id", id).eq("user_id", userId);
+        if (error) {
+          console.error("Failed to update task:", error.message);
+          void refresh();
+        }
+      })();
     },
-    [],
+    [userId, categoryIdFor, refresh],
   );
 
   const clearTasks = useCallback(() => {
     setTasks([]);
-  }, []);
+    void (async () => {
+      if (!supabase || !userId) return;
+      const { error } = await supabase.from("tasks").delete().eq("user_id", userId);
+      if (error) {
+        console.error("Failed to clear tasks:", error.message);
+        void refresh();
+      }
+    })();
+  }, [userId, refresh]);
 
-  return { tasks, hydrated, addTask, toggleTask, removeTask, updateTask, clearTasks };
+  return { tasks, hydrated, refresh, addTask, toggleTask, removeTask, updateTask, clearTasks };
 }
 
 const DISPLAY_NAME_KEY = "tillytasky.display-name.v1";
