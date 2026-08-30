@@ -133,10 +133,17 @@ export function SettingsDialog({
                 />
                 <Button
                   type="button"
-                  onClick={() => onDisplayNameChange(name)}
+                  disabled={name.trim() === lastSavedName.trim() || savingName}
+                  onClick={() => void handleSaveName()}
                   className="border-2 border-foreground font-display"
                 >
-                  Save
+                  {savingName ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : name.trim() === lastSavedName.trim() ? (
+                    "Saved"
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
