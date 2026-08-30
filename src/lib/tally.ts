@@ -241,8 +241,15 @@ export function useTasks() {
   }, [userId, loadCategoryMaps]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    void (async () => {
+      if (userId) {
+        const { migrateLegacyTasks } = await import("./migrate-legacy-tasks");
+        await migrateLegacyTasks(userId);
+      }
+      await refresh();
+    })();
+  }, [userId, refresh]);
+
 
   const addTask = useCallback(
     (
