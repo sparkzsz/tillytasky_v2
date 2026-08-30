@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, Pencil, Search, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, CalendarIcon, Check, Copy, Pencil, Search, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -8,8 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import { CategoryFilter } from "@/components/CategoryFilter";
