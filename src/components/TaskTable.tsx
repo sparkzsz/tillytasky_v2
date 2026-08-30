@@ -111,6 +111,24 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
     setSelected([]);
   }
 
+  function moveSelected(day: Date | undefined) {
+    if (!day) return;
+    const date = toKey(day);
+    tasks
+      .filter((t) => selectedSet.has(t.id))
+      .forEach((t) =>
+        onUpdate(t.id, {
+          title: t.title,
+          category: t.category,
+          date,
+          description: t.description ?? null,
+          important: Boolean(t.important),
+        }),
+      );
+    setMoveOpen(false);
+    setSelected([]);
+  }
+
   const columns: { key: SortKey; label: string; className: string }[] = [
     { key: "done", label: "Done", className: "w-16" },
     { key: "title", label: "Task", className: "" },
