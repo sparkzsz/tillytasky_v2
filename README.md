@@ -1,4 +1,6 @@
-<img width="320" height="180" alt="tillytasky_banner" src="https://github.com/user-attachments/assets/988ace0d-fb0c-4903-9550-3642bc743aaa" />
+<div align="center">
+  <img width="320" height="180" alt="tillytasky_banner" src="https://github.com/user-attachments/assets/988ace0d-fb0c-4903-9550-3642bc743aaa">
+</div>
 
 # TillyTasky
 
