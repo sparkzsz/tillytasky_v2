@@ -33,7 +33,7 @@ I realized a checkmark on a list wasn’t enough.
 
 I needed a game. Something to be excited about. Something that would keep me going without burning me out.
 
-While hunting for my next tech job in the AI rat race, I started keeping a daily tally of submitted applications, challenging myself to beat yesterday's count. Because let's be real: recruiting is just a numbers game.
+While hunting for my next tech job in the AI rat race, I started keeping a daily tally of submitted applications, challenging myself to beat yesterday's count. Because let's be real: recruiting is a numbers game.
 
 So why not bring this “game” to everyday tasks?
 
