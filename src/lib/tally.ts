@@ -200,7 +200,6 @@ export function useTasks() {
 const DISPLAY_NAME_KEY = "tillytasky.display-name.v1";
 
 /** Display name for the hero greeting, stored per user in the browser/Supabase. */
-import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export function useDisplayName(userId: string | undefined) {
