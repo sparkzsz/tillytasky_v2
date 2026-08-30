@@ -199,27 +199,51 @@ export function useTasks() {
 
 const DISPLAY_NAME_KEY = "tillytasky.display-name.v1";
 
-/** Display name for the hero greeting, stored per user in the browser. */
+/** Display name for the hero greeting, stored per user in the browser/Supabase. */
+import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
 export function useDisplayName(userId: string | undefined) {
-  const [displayName, setName] = useState("");
+  const [displayName, setDisplayNameState] = useState("");
 
   useEffect(() => {
-    if (!userId) return;
-    setName(window.localStorage.getItem(`${DISPLAY_NAME_KEY}.${userId}`) ?? "");
+    if (!userId) {
+      setDisplayNameState("");
+      return;
+    }
+
+    const loadDisplayName = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const name = user?.user_metadata?.display_name ?? "";
+      setDisplayNameState(name);
+    };
+
+    void loadDisplayName();
   }, [userId]);
 
-  const setDisplayName = useCallback(
-    (value: string) => {
-      const next = value.trim().slice(0, 24);
-      setName(next);
-      if (!userId) return;
-      if (next) window.localStorage.setItem(`${DISPLAY_NAME_KEY}.${userId}`, next);
-      else window.localStorage.removeItem(`${DISPLAY_NAME_KEY}.${userId}`);
-    },
-    [userId],
-  );
+  const setDisplayName = useCallback(async (value: string) => {
+    const next = value.trim().slice(0, 24);
 
-  return { displayName, setDisplayName };
+    setDisplayNameState(next);
+
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        display_name: next,
+      },
+    });
+
+    if (error) {
+      console.error("Failed to save display name:", error);
+    }
+  }, []);
+
+  return {
+    displayName,
+    setDisplayName,
+  };
 }
 
 const LOGO_KEY = "tillytasky.logo.v1";
