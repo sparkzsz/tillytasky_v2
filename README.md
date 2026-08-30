@@ -8,7 +8,7 @@ This project was built with [Lovable](https://lovable.dev).
 
 ## Why TillyTasky?
 
-> “I'm disciplined and organized. I use habit and routine to make my life possible.” - Leonard Shelby, Memento (2000)
+> “I use habit and routine to make my life possible.” - Leonard Shelby, *Memento* (2000)
 
 I’ve been a Notion user for over six years, starting back in my junior (COVID) year of high school. For a while, it worked great for managing my tasks.
 
