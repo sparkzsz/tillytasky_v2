@@ -212,11 +212,12 @@ export function useDisplayName(userId: string | undefined) {
     }
 
     const loadDisplayName = async () => {
+      if (!supabase) return;
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      const name = user?.user_metadata?.display_name ?? "";
+      const name = (user?.user_metadata?.["display_name"] as string | undefined) ?? "";
       setDisplayNameState(name);
     };
 
