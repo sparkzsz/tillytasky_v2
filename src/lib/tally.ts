@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** A category is just its user-created name; the list lives in the database. */
 export type Category = string;
