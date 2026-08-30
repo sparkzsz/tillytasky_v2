@@ -157,6 +157,24 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
         {selected.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">{selected.length} selected</span>
+            <Popover open={moveOpen} onOpenChange={setMoveOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="gap-2 border-2 border-foreground font-display"
+                >
+                  <CalendarIcon className="size-4" /> Move to day
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-auto border-2 border-foreground p-0">
+                <Calendar
+                  mode="single"
+                  onSelect={moveSelected}
+                  initialFocus
+                  className={cn("pointer-events-auto p-3")}
+                />
+              </PopoverContent>
+            </Popover>
             <Button
               variant="destructive"
               onClick={deleteSelected}
