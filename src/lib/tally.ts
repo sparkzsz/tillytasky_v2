@@ -229,6 +229,7 @@ export function useDisplayName(userId: string | undefined) {
 
     setDisplayNameState(next);
 
+    if (!supabase) return;
     const { error } = await supabase.auth.updateUser({
       data: {
         display_name: next,
