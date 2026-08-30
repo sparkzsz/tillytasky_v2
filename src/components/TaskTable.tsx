@@ -60,6 +60,7 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "date", dir: -1 });
   const [editing, setEditing] = useState<Task | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [moveOpen, setMoveOpen] = useState(false);
   const today = toKey(new Date());
 
   const rows = useMemo(() => {
