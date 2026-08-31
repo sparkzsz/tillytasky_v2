@@ -41,6 +41,7 @@ function Index() {
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
 
   useEffect(() => {
@@ -123,6 +124,8 @@ function Index() {
               {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </button>
             <SettingsDialog
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
               tasks={tasks}
               displayName={displayName}
               logo={logo}
