@@ -30,10 +30,25 @@ type Props = {
     important?: boolean,
   ) => void;
   defaultDate: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 };
 
-export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
-  const [open, setOpen] = useState(false);
+export function AddTaskDialog({
+  categories,
+  onAdd,
+  defaultDate,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger,
+}: Props) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (v: boolean) => {
+    setUncontrolledOpen(v);
+    onOpenChange?.(v);
+  };
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
   const [description, setDescription] = useState("");
@@ -43,6 +58,10 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   useEffect(() => {
     if (!categories.includes(category)) setCategory(categories[0] ?? "");
   }, [categories, category]);
+
+  useEffect(() => {
+    if (open) setDate(defaultDate);
+  }, [open, defaultDate]);
 
   function submit() {
     const trimmed = title.trim();
@@ -57,18 +76,14 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
 
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-        if (v) setDate(defaultDate);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="lg" className="gap-2 border-2 border-foreground font-display shadow-[3px_3px_0_0_var(--color-foreground)]">
-          <Plus className="size-4" /> Add task
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button size="lg" className="gap-2 border-2 border-foreground font-display shadow-[3px_3px_0_0_var(--color-foreground)]">
+            <Plus className="size-4" /> Add task
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="border-2 border-foreground sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">New task</DialogTitle>

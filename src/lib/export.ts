@@ -1,7 +1,7 @@
 import { displayTitle, formatDay, toKey, type Task } from "./tally";
 
 export type ExportRange = "day" | "week" | "month" | "all";
-export type ExportFormat = "csv" | "xlsx";
+export type ExportFormat = "csv" | "xlsx" | "json";
 
 const HEADERS = ["Done", "Task", "Description", "Category", "Date"] as const;
 
@@ -86,6 +86,18 @@ export async function exportTasks(tasks: Task[], range: ExportRange, format: Exp
     download(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }), name);
     return;
   }
+
+  if (format === "json") {
+    const json = rows(filterByRange(tasks, range)).map((r) =>
+      Object.fromEntries(HEADERS.map((h, i) => [h, r[i]])),
+    );
+    download(
+      new Blob([JSON.stringify(json, null, 2)], { type: "application/json;charset=utf-8" }),
+      name,
+    );
+    return;
+  }
+
 
   const XLSX = await import("xlsx");
   const sheet = XLSX.utils.aoa_to_sheet(data);

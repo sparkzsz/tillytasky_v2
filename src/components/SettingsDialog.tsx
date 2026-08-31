@@ -77,7 +77,7 @@ export function SettingsDialog({
     }
   }
 
-  async function handleExport(format: "csv" | "xlsx") {
+  async function handleExport(format: "csv" | "xlsx" | "json") {
     setBusy(true);
     try {
       await exportTasks(tasks, range, format);
@@ -215,6 +215,15 @@ export function SettingsDialog({
                   className="gap-2 border-2 border-foreground font-display"
                 >
                   <Download className="size-4" /> .xlsx
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => void handleExport("json")}
+                  className="gap-2 border-2 border-foreground font-display"
+                >
+                  <Download className="size-4" /> .json
                 </Button>
               </div>
             </section>
