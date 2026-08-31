@@ -87,6 +87,18 @@ export async function exportTasks(tasks: Task[], range: ExportRange, format: Exp
     return;
   }
 
+  if (format === "json") {
+    const json = rows(filterByRange(tasks, range)).map((r) =>
+      Object.fromEntries(HEADERS.map((h, i) => [h, r[i]])),
+    );
+    download(
+      new Blob([JSON.stringify(json, null, 2)], { type: "application/json;charset=utf-8" }),
+      name,
+    );
+    return;
+  }
+
+
   const XLSX = await import("xlsx");
   const sheet = XLSX.utils.aoa_to_sheet(data);
   sheet["!cols"] = [{ wch: 8 }, { wch: 40 }, { wch: 40 }, { wch: 18 }, { wch: 14 }];
