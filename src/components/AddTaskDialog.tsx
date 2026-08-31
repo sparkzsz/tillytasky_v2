@@ -30,10 +30,25 @@ type Props = {
     important?: boolean,
   ) => void;
   defaultDate: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 };
 
-export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
-  const [open, setOpen] = useState(false);
+export function AddTaskDialog({
+  categories,
+  onAdd,
+  defaultDate,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger,
+}: Props) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (v: boolean) => {
+    setUncontrolledOpen(v);
+    onOpenChange?.(v);
+  };
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
   const [description, setDescription] = useState("");
@@ -43,6 +58,10 @@ export function AddTaskDialog({ categories, onAdd, defaultDate }: Props) {
   useEffect(() => {
     if (!categories.includes(category)) setCategory(categories[0] ?? "");
   }, [categories, category]);
+
+  useEffect(() => {
+    if (open) setDate(defaultDate);
+  }, [open, defaultDate]);
 
   function submit() {
     const trimmed = title.trim();
