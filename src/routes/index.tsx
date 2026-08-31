@@ -49,9 +49,9 @@ function Index() {
 
   useEffect(() => {
     if (needsOnboarding) return;
+    const TABS: Record<string, string> = { t: "today", a: "tasks", c: "categories", o: "overview", p: "progress" };
     function onKeyDown(e: KeyboardEvent) {
       const key = e.key.toLowerCase();
-      if (key !== "n" && key !== "t") return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement | null;
       if (
@@ -61,12 +61,23 @@ function Index() {
           el.closest("[role='dialog']"))
       )
         return;
-      e.preventDefault();
-      setShortcutOpen(true);
+      if (key === "n") {
+        e.preventDefault();
+        setShortcutOpen(true);
+      } else if (key === "s") {
+        e.preventDefault();
+        setSettingsOpen(true);
+      } else if (key === "d") {
+        e.preventDefault();
+        toggleTheme();
+      } else if (TABS[key]) {
+        e.preventDefault();
+        setTab(TABS[key]!);
+      }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [needsOnboarding]);
+  }, [needsOnboarding, toggleTheme]);
 
   async function handleSignOut() {
     await signOut();
