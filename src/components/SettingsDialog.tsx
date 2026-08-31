@@ -77,7 +77,7 @@ export function SettingsDialog({
     }
   }
 
-  async function handleExport(format: "csv" | "xlsx") {
+  async function handleExport(format: "csv" | "xlsx" | "json") {
     setBusy(true);
     try {
       await exportTasks(tasks, range, format);
