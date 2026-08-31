@@ -211,6 +211,17 @@ function Index() {
         </TabsContent>
       </Tabs>
       )}
+
+      {!needsOnboarding && (
+        <AddTaskDialog
+          hideTrigger
+          open={shortcutOpen}
+          onOpenChange={setShortcutOpen}
+          categories={cats.names}
+          defaultDate={toKey(new Date())}
+          onAdd={addTask}
+        />
+      )}
     </main>
   );
 }
