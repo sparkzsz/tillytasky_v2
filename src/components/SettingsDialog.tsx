@@ -30,6 +30,8 @@ type Props = {
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const RANGES: { value: ExportRange; label: string }[] = [
@@ -47,8 +49,15 @@ export function SettingsDialog({
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
+  open: controlledOpen,
+  onOpenChange,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (v: boolean) => {
+    setUncontrolledOpen(v);
+    onOpenChange?.(v);
+  };
   const [name, setName] = useState(displayName);
   const [lastSavedName, setLastSavedName] = useState(displayName);
   const [savingName, setSavingName] = useState(false);

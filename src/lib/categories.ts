@@ -23,10 +23,23 @@ function saveOrder(userId: string | undefined, ids: string[]) {
   window.localStorage.setItem(`${ORDER_KEY}.${userId}`, JSON.stringify(ids));
 }
 
+const SEEDED_KEY = "tillytasky.category-order-seeded.v1";
+
+function alreadySeeded(userId: string | undefined) {
+  if (typeof window === "undefined" || !userId) return true;
+  return window.localStorage.getItem(`${SEEDED_KEY}.${userId}`) === "1";
+}
+
+function markSeeded(userId: string | undefined) {
+  if (typeof window === "undefined" || !userId) return;
+  window.localStorage.setItem(`${SEEDED_KEY}.${userId}`, "1");
+}
+
 export type UserCategory = {
   id: string;
   name: string;
   color: string | null;
+  sortOrder: number | null;
 };
 
 type State = {
@@ -41,9 +54,18 @@ function normalize(rows: Record<string, unknown>[]): UserCategory[] {
       id: String(r['id'] ?? r['category_id'] ?? ""),
       name: String(r['name'] ?? r['title'] ?? r['category'] ?? "").trim(),
       color: r['color'] ? String(r['color']) : null,
+      sortOrder:
+        r['sort_order'] === null || r['sort_order'] === undefined
+          ? null
+          : Number(r['sort_order']),
     }))
     .filter((c) => c.id && c.name)
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      const ra = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+      const rb = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+      if (ra !== rb) return ra - rb;
+      return a.name.localeCompare(b.name);
+    });
 }
 
 /**
@@ -58,12 +80,17 @@ export function useCategories(sessionUserId: string | undefined) {
     setOrder(loadOrder(sessionUserId));
   }, [sessionUserId]);
 
-  /** Alphabetical by default; the user's saved order wins when present. */
+  /** Saved sort_order wins; a legacy local order is used until it is seeded to the server. */
   const ordered = useMemo(() => {
-    const rank = new Map(order.map((id, i) => [id, i]));
+    const local = new Map(order.map((id, i) => [id, i]));
+    const hasServerOrder = state.categories.some((c) => c.sortOrder !== null);
     return [...state.categories].sort((a, b) => {
-      const ra = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-      const rb = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      const ra = hasServerOrder
+        ? (a.sortOrder ?? Number.MAX_SAFE_INTEGER)
+        : (local.get(a.id) ?? Number.MAX_SAFE_INTEGER);
+      const rb = hasServerOrder
+        ? (b.sortOrder ?? Number.MAX_SAFE_INTEGER)
+        : (local.get(b.id) ?? Number.MAX_SAFE_INTEGER);
       if (ra !== rb) return ra - rb;
       return a.name.localeCompare(b.name);
     });
@@ -88,6 +115,20 @@ export function useCategories(sessionUserId: string | undefined) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  /** One-time push of a device-local order up to the database. */
+  useEffect(() => {
+    if (state.loading || state.error || !sessionUserId || state.categories.length === 0) return;
+    if (alreadySeeded(sessionUserId)) return;
+    if (state.categories.some((c) => c.sortOrder !== null)) {
+      markSeeded(sessionUserId);
+      return;
+    }
+    const local = loadOrder(sessionUserId);
+    if (local.length === 0) return;
+    void reorder(ordered.map((c) => c.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.loading, state.error, state.categories, sessionUserId]);
 
   const exists = useCallback(
     (name: string, ignoreId?: string) =>
@@ -149,11 +190,23 @@ export function useCategories(sessionUserId: string | undefined) {
     [refresh],
   );
 
-  /** Persists an explicit display order (drag and drop). */
+  /** Persists an explicit display order (drag and drop) to the database. */
   const reorder = useCallback(
-    (ids: string[]) => {
+    async (ids: string[]) => {
       saveOrder(sessionUserId, ids);
       setOrder(ids);
+      setState((s) => ({
+        ...s,
+        categories: s.categories.map((c) => {
+          const i = ids.indexOf(c.id);
+          return i < 0 ? c : { ...c, sortOrder: i };
+        }),
+      }));
+      if (!supabase) return;
+      await Promise.all(
+        ids.map((id, i) => supabase!.from("categories").update({ sort_order: i }).eq("id", id)),
+      );
+      markSeeded(sessionUserId);
     },
     [sessionUserId],
   );
