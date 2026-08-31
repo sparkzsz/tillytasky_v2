@@ -39,11 +39,33 @@ function Index() {
   const { logo, setLogo, src: logoSrcUrl } = useLogoVariant(session?.user.id);
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
+  const [shortcutOpen, setShortcutOpen] = useState(false);
   const needsOnboarding = !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
 
   useEffect(() => {
     if (!loading && !session) void navigate({ to: "/login", replace: true });
   }, [loading, session, navigate]);
+
+  useEffect(() => {
+    if (needsOnboarding) return;
+    function onKeyDown(e: KeyboardEvent) {
+      const key = e.key.toLowerCase();
+      if (key !== "n" && key !== "t") return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (
+        el &&
+        (el.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) ||
+          el.closest("[role='dialog']"))
+      )
+        return;
+      e.preventDefault();
+      setShortcutOpen(true);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [needsOnboarding]);
 
   async function handleSignOut() {
     await signOut();
