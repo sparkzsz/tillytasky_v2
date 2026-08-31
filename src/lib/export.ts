@@ -1,7 +1,7 @@
 import { displayTitle, formatDay, toKey, type Task } from "./tally";
 
 export type ExportRange = "day" | "week" | "month" | "all";
-export type ExportFormat = "csv" | "xlsx";
+export type ExportFormat = "csv" | "xlsx" | "json";
 
 const HEADERS = ["Done", "Task", "Description", "Category", "Date"] as const;
 
