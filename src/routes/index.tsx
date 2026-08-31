@@ -11,7 +11,8 @@ import { CategoryManager } from "@/components/CategoryManager";
 import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
 import { SettingsDialog } from "@/components/SettingsDialog";
-import { useDisplayName, useLogoVariant, useTasks, useTheme } from "@/lib/tally";
+import { AddTaskDialog } from "@/components/AddTaskDialog";
+import { toKey, useDisplayName, useLogoVariant, useTasks, useTheme } from "@/lib/tally";
 
 const TITLE = "TillyTasky — Stack tasks in your till.";
 const DESCRIPTION =
