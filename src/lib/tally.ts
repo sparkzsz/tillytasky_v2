@@ -19,10 +19,11 @@ export function displayTitle(task: Pick<Task, "title" | "important">) {
   return task.important ? `❗️ ${task.title}` : task.title;
 }
 
-/** Groups tasks by the user's category order, alphabetical by title inside each group. */
+/** Important tasks first, then by the user's category order, alphabetical by title inside each group. */
 export function sortTasksByCategory(tasks: Task[], categoryOrder: Category[]) {
   const rank = new Map(categoryOrder.map((c, i) => [c.toLowerCase(), i]));
   return [...tasks].sort((a, b) => {
+    if (a.important !== b.important) return a.important ? -1 : 1;
     const ra = rank.get(a.category.toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
     const rb = rank.get(b.category.toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
     if (ra !== rb) return ra - rb;
