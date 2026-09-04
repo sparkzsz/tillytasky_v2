@@ -296,29 +296,43 @@ export function useTasks() {
 
   const toggleTask = useCallback(
     (id: string) => {
-      let next: Task | undefined;
+      const current = tasks.find((t) => t.id === id);
+  
+      if (!current) return;
+  
+      const next: Task = {
+        ...current,
+        done: !current.done,
+        completedAt: current.done
+          ? null
+          : new Date().toISOString(),
+      };
+  
+      // Optimistic UI update
       setTasks((prev) =>
-        prev.map((t) => {
-          if (t.id !== id) return t;
-          next = { ...t, done: !t.done, completedAt: t.done ? null : new Date().toISOString() };
-          return next;
-        }),
+        prev.map((t) => (t.id === id ? next : t)),
       );
-
+  
       void (async () => {
-        if (!supabase || !userId || !next) return;
+        if (!supabase || !userId) return;
+  
         const { error } = await supabase
           .from("tasks")
-          .update({ completed: next.done, completed_at: next.completedAt })
+          .update({
+            completed: next.done,
+            completed_at: next.completedAt,
+          })
           .eq("id", id)
           .eq("user_id", userId);
+  
         if (error) {
-          console.error("Failed to update task:", error.message);
+          console.error("Failed to update task:", error);
+          // Refresh from Supabase so the UI reflects the actual database state
           void refresh();
         }
       })();
     },
-    [userId, refresh],
+    [tasks, userId, refresh],
   );
 
   const removeTask = useCallback(
