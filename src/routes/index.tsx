@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks } = useTasks();
+  const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } = useTasks();
   const { theme, toggleTheme } = useTheme();
   const { session, loading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -203,6 +203,7 @@ function Index() {
             onToggle={toggleTask}
             onRemove={removeTask}
             onUpdate={updateTask}
+            onMoveTasksToDate={moveTasksToDate}
           />
         </TabsContent>
         <TabsContent value="overview">
