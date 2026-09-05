@@ -50,11 +50,12 @@ type Props = {
       important: boolean;
     },
   ) => void;
+  onMoveTasksToDate: (ids: string[], date: string) => void;
 };
 
 type SortKey = "date" | "title" | "category" | "done";
 
-export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpdate }: Props) {
+export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpdate, onMoveTasksToDate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "date", dir: -1 });
@@ -114,17 +115,8 @@ export function TaskTable({ tasks, categories, onAdd, onToggle, onRemove, onUpda
   function moveSelected(day: Date | undefined) {
     if (!day) return;
     const date = toKey(day);
-    tasks
-      .filter((t) => selectedSet.has(t.id))
-      .forEach((t) =>
-        onUpdate(t.id, {
-          title: t.title,
-          category: t.category,
-          date,
-          description: t.description ?? null,
-          important: Boolean(t.important),
-        }),
-      );
+    const ids = tasks.filter((t) => selectedSet.has(t.id)).map((t) => t.id);
+    if (ids.length > 0) onMoveTasksToDate(ids, date);
     setMoveOpen(false);
     setSelected([]);
   }
