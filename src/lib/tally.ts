@@ -389,7 +389,28 @@ export function useTasks() {
     })();
   }, [userId, refresh]);
 
-  return { tasks, hydrated, refresh, addTask, toggleTask, removeTask, updateTask, clearTasks };
+  const moveTasksToDate = useCallback(
+    (ids: string[], date: string) => {
+      const idSet = new Set(ids);
+      setTasks((prev) => prev.map((t) => (idSet.has(t.id) ? { ...t, date } : t)));
+
+      void (async () => {
+        if (!supabase || !userId || ids.length === 0) return;
+        const { error } = await supabase
+          .from("tasks")
+          .update({ due_date: date })
+          .in("id", ids)
+          .eq("user_id", userId);
+        if (error) {
+          console.error("Failed to move tasks:", error.message);
+          void refresh();
+        }
+      })();
+    },
+    [userId, refresh],
+  );
+
+  return { tasks, hydrated, refresh, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate };
 }
 
 const DISPLAY_NAME_KEY = "tillytasky.display-name.v1";
