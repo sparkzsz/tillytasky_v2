@@ -32,7 +32,7 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && session) void navigate({ to: "/", replace: true });
+    if (!loading && session) void navigate({ to: "/app", replace: true });
   }, [loading, session, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -50,7 +50,7 @@ function LoginPage() {
       return;
     }
     setSubmitting(false);
-    void navigate({ to: "/", replace: true });
+    void navigate({ to: "/app", replace: true });
   }
 
   return (
@@ -126,6 +126,13 @@ function LoginPage() {
             "Log In"
           )}
         </Button>
+
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          New here?{" "}
+          <Link to="/signup" className="font-medium underline">
+            Sign up
+          </Link>
+        </p>
       </form>
     </main>
   );
