@@ -8,6 +8,11 @@ type AuthValue = {
   loading: boolean;
   configured: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName?: string,
+  ) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 };
 
@@ -45,6 +50,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!supabase) return { error: "Login is not configured yet." };
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         return { error: error ? error.message : null };
+      },
+      signUp: async (email, password, displayName) => {
+        if (!supabase) return { error: "Sign up is not configured yet.", needsConfirmation: false };
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            ...(displayName ? { data: { display_name: displayName } } : {}),
+          },
+        });
+        if (error) return { error: error.message, needsConfirmation: false };
+        return { error: null, needsConfirmation: !data.session };
       },
       signOut: async () => {
         if (!supabase) return;
