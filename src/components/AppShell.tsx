@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, LogOut, Moon, Sun } from "lucide-react";
+import { Github, Loader2, LogOut, Moon, Sun } from "lucide-react";
 
 import { OverviewView } from "@/components/OverviewView";
 import { ProgressView } from "@/components/ProgressView";
@@ -147,7 +147,7 @@ export function AppShell({
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
               {displayName
-                ? `Hi, ${displayName}! Let's stack tasks in your till.`
+                ? `Hi ${displayName}! Let's stack tasks in your till.`
                 : "Stack tasks in your till."}
             </p>
           </div>
@@ -171,6 +171,16 @@ export function AppShell({
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
             />
+            <a
+              href="https://github.com/sparkzsz/tillytasky_v2"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TillyTasky on GitHub"
+              title="TillyTasky on GitHub"
+              className="rounded-full border-2 border-foreground p-2.5 transition-colors hover:bg-muted"
+            >
+              <Github className="size-4" />
+            </a>
             <button
               type="button"
               onClick={onExit}

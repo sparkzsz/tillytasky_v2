@@ -61,9 +61,6 @@ function WelcomePage() {
         <Button asChild className="mt-5 w-full rounded-full font-display">
           <Link to="/demo">Preview Demo</Link>
         </Button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          No account needed — explore a till that's already full.
-        </p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <Button asChild variant="outline" className="rounded-full font-display">
