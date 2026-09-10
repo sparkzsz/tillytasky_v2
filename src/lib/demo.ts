@@ -126,7 +126,7 @@ const SEED_TASKS: SeedTask[] = [
   { title: "Study group", category: "School", offset: 1 },
   { title: "Mock interview", category: "Recruiting", offset: 1, important: true },
   { title: "Rest day walk", category: "Exercise", offset: 2 },
-  { title: "Call home", category: "Self-care", offset: 2 },
+  { title: "Call friends", category: "Self-care", offset: 2 },
   { title: "Plan next week", category: "General", offset: 3 },
 ];
 
@@ -390,10 +390,10 @@ type DemoProfile = { displayName: string; logo: LogoVariant };
 
 /** Display name + till color for the demo session. */
 export function useDemoProfile() {
-  const [profile, setProfile] = useState<DemoProfile>({ displayName: "", logo: "default" });
+  const [profile, setProfile] = useState<DemoProfile>({ displayName: "Tilly", logo: "default" });
 
   useEffect(() => {
-    setProfile(read<DemoProfile>(DEMO_PROFILE_KEY, { displayName: "", logo: "default" }));
+    setProfile(read<DemoProfile>(DEMO_PROFILE_KEY, { displayName: "Tilly", logo: "default" }));
   }, []);
 
   const save = useCallback((next: DemoProfile) => {
