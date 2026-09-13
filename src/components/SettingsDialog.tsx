@@ -338,7 +338,9 @@ export function SettingsDialog({
                   </div>
                 </div>
               )}
-            </section>
+                </section>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </DialogContent>
       </Dialog>
