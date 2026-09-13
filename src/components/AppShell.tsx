@@ -72,6 +72,7 @@ export function AppShell({
   logo,
   onLogoChange,
   demo = false,
+  carryOverKey,
   onExit,
 }: Props) {
   const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } =
