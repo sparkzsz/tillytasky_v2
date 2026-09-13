@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
-import { useDisplayName, useLogoVariant, useTasks } from "@/lib/tally";
+import { CARRY_OVER_KEY, useDisplayName, useLogoVariant, useTasks } from "@/lib/tally";
 
 const TITLE = "Your till — TillyTasky";
 const DESCRIPTION = "Stack tasks in your till and beat yesterday's count.";
