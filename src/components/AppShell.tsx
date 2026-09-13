@@ -176,9 +176,7 @@ export function AppShell({
               )}
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {displayName
-                ? `Hi ${displayName}! Let's stack tasks in your till.`
-                : "Stack tasks in your till."}
+              {greetingFor(toKey(new Date()), displayName)}
             </p>
           </div>
           <div className="flex items-start gap-3 self-stretch">
