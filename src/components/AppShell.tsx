@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Github, Loader2, LogOut, Moon, Sun } from "lucide-react";
 
 import { OverviewView } from "@/components/OverviewView";
