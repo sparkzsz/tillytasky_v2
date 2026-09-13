@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
-import { Download, Loader2, Settings, Trash2 } from "lucide-react";
+import {
+  CalendarArrowUp,
+  ChevronDown,
+  Download,
+  Loader2,
+  Settings,
+  Trash2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
