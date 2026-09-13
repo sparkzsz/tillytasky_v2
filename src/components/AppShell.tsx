@@ -198,6 +198,9 @@ export function AppShell({
               onDisplayNameChange={onDisplayNameChange}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
+              carryOverAuto={carry.auto}
+              onCarryOverAutoChange={carry.setAuto}
+              onCarryOverNow={runCarryOver}
             />
             <a
               href="https://github.com/sparkzsz/tillytasky_v2"
