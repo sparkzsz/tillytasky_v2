@@ -54,6 +54,8 @@ type Props = {
   onLogoChange: (value: LogoVariant) => void;
   /** Demo Mode shows a badge and an "Exit demo" action instead of log out. */
   demo?: boolean;
+  /** localStorage key holding the "move yesterday's tasks" preference. */
+  carryOverKey: string;
   onExit: () => void;
 };
 
