@@ -84,12 +84,30 @@ export function SettingsDialog({
   const [range, setRange] = useState<ExportRange>("month");
   const [confirm, setConfirm] = useState<"tasks" | "all" | null>(null);
   const [busy, setBusy] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [carryOverMessage, setCarryOverMessage] = useState<string | null>(null);
+
+  async function handleCarryOverNow() {
+    setBusy(true);
+    try {
+      const moved = await onCarryOverNow();
+      setCarryOverMessage(
+        moved === 0
+          ? "Nothing left over from yesterday."
+          : `Moved ${moved} task${moved === 1 ? "" : "s"} to today.`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (open) {
       setName(displayName);
       setLastSavedName(displayName);
       setConfirm(null);
+      setAdvancedOpen(false);
+      setCarryOverMessage(null);
       setSavingName(false);
     }
   }, [open, displayName]);
