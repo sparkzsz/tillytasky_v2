@@ -43,6 +43,10 @@ type Props = {
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
+  carryOverAuto: boolean;
+  onCarryOverAutoChange: (value: boolean) => void;
+  /** Moves yesterday's unfinished tasks to today; resolves with how many moved. */
+  onCarryOverNow: () => Promise<number> | number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
