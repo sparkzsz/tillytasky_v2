@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { useCategories } from "@/lib/categories";
-import { useDisplayName, useLogoVariant, useTasks } from "@/lib/tally";
+import { CARRY_OVER_KEY, useDisplayName, useLogoVariant, useTasks } from "@/lib/tally";
 
 const TITLE = "Your till — TillyTasky";
 const DESCRIPTION = "Stack tasks in your till and beat yesterday's count.";
@@ -47,6 +47,7 @@ function AuthenticatedApp() {
     <AppShell
       tasksApi={tasksApi}
       cats={cats}
+      carryOverKey={`${CARRY_OVER_KEY}.${session.user.id}`}
       displayName={displayName}
       onDisplayNameChange={(value) => void setDisplayName(value)}
       logo={logo}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Github, Loader2, LogOut, Moon, Sun } from "lucide-react";
 
 import { OverviewView } from "@/components/OverviewView";
@@ -10,7 +10,17 @@ import { CategoryManager } from "@/components/CategoryManager";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { AddTaskDialog } from "@/components/AddTaskDialog";
 import type { UserCategory } from "@/lib/categories";
-import { logoSrc, toKey, type Category, type LogoVariant, type Task } from "@/lib/tally";
+import {
+  carryOverIds,
+  greetingFor,
+  logoSrc,
+  previousDayKey,
+  toKey,
+  useCarryOver,
+  type Category,
+  type LogoVariant,
+  type Task,
+} from "@/lib/tally";
 import { useTheme } from "@/lib/tally";
 
 export type TasksApi = {
@@ -54,6 +64,8 @@ type Props = {
   onLogoChange: (value: LogoVariant) => void;
   /** Demo Mode shows a badge and an "Exit demo" action instead of log out. */
   demo?: boolean;
+  /** localStorage key holding the "move yesterday's tasks" preference. */
+  carryOverKey: string;
   onExit: () => void;
 };
 
@@ -70,6 +82,7 @@ export function AppShell({
   logo,
   onLogoChange,
   demo = false,
+  carryOverKey,
   onExit,
 }: Props) {
   const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } =
@@ -80,6 +93,23 @@ export function AppShell({
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const carry = useCarryOver(carryOverKey);
+
+  const runCarryOver = useCallback(() => {
+    const today = toKey(new Date());
+    const ids = carryOverIds(tasks, previousDayKey(today));
+    if (ids.length > 0) moveTasksToDate(ids, today);
+    carry.markRun(today);
+    return ids.length;
+  }, [tasks, moveTasksToDate, carry]);
+
+  useEffect(() => {
+    if (!tasksApi.hydrated || !carry.auto) return;
+    const today = toKey(new Date());
+    if (carry.lastRun === today) return;
+    runCarryOver();
+  }, [tasksApi.hydrated, carry.auto, carry.lastRun, runCarryOver]);
+
   const needsOnboarding =
     !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
 
@@ -146,9 +176,7 @@ export function AppShell({
               )}
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {displayName
-                ? `Hi ${displayName}! Let's stack tasks in your till.`
-                : "Stack tasks in your till."}
+              {greetingFor(toKey(new Date()), displayName)}
             </p>
           </div>
           <div className="flex items-start gap-3 self-stretch">
@@ -170,6 +198,9 @@ export function AppShell({
               onDisplayNameChange={onDisplayNameChange}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
+              carryOverAuto={carry.auto}
+              onCarryOverAutoChange={carry.setAuto}
+              onCarryOverNow={runCarryOver}
             />
             <a
               href="https://github.com/sparkzsz/tillytasky_v2"

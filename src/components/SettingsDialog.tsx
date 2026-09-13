@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
-import { Download, Loader2, Settings, Trash2 } from "lucide-react";
+import {
+  CalendarArrowUp,
+  ChevronDown,
+  Download,
+  Loader2,
+  Settings,
+  Trash2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +43,10 @@ type Props = {
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
+  carryOverAuto: boolean;
+  onCarryOverAutoChange: (value: boolean) => void;
+  /** Moves yesterday's unfinished tasks to today; resolves with how many moved. */
+  onCarryOverNow: () => Promise<number> | number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
@@ -49,6 +66,9 @@ export function SettingsDialog({
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
+  carryOverAuto,
+  onCarryOverAutoChange,
+  onCarryOverNow,
   open: controlledOpen,
   onOpenChange,
 }: Props) {
@@ -64,12 +84,30 @@ export function SettingsDialog({
   const [range, setRange] = useState<ExportRange>("month");
   const [confirm, setConfirm] = useState<"tasks" | "all" | null>(null);
   const [busy, setBusy] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [carryOverMessage, setCarryOverMessage] = useState<string | null>(null);
+
+  async function handleCarryOverNow() {
+    setBusy(true);
+    try {
+      const moved = await onCarryOverNow();
+      setCarryOverMessage(
+        moved === 0
+          ? "Nothing left over from yesterday."
+          : `Moved ${moved} task${moved === 1 ? "" : "s"} to today.`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (open) {
       setName(displayName);
       setLastSavedName(displayName);
       setConfirm(null);
+      setAdvancedOpen(false);
+      setCarryOverMessage(null);
       setSavingName(false);
     }
   }, [open, displayName]);
@@ -237,9 +275,55 @@ export function SettingsDialog({
               </div>
             </section>
 
-            <section className="space-y-3 border-t-2 border-border pt-5">
-              <p className="font-display text-base">Reset data</p>
-              {confirm === null ? (
+            <Collapsible
+              open={advancedOpen}
+              onOpenChange={setAdvancedOpen}
+              className="border-t-2 border-border pt-5"
+            >
+              <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 font-display text-base">
+                Advanced
+                <ChevronDown
+                  className={cn("size-4 transition-transform", advancedOpen && "rotate-180")}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-6 pt-4">
+                <section className="space-y-3">
+                  <p className="font-display text-base">Yesterday's tasks</p>
+                  <p className="text-xs text-muted-foreground">
+                    Unfinished tasks from yesterday move to today. Finished tasks stay put.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={busy}
+                      onClick={() => void handleCarryOverNow()}
+                      className="gap-2 border-2 border-foreground font-display"
+                    >
+                      <CalendarArrowUp className="size-4" /> Move now
+                    </Button>
+                    {carryOverMessage && (
+                      <span className="text-xs text-muted-foreground">{carryOverMessage}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
+                    <div>
+                      <p className="text-sm font-semibold">Move automatically</p>
+                      <p className="text-xs text-muted-foreground">
+                        Runs once a day, the first time you open TillyTasky.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={carryOverAuto}
+                      onCheckedChange={onCarryOverAutoChange}
+                      aria-label="Move yesterday's tasks automatically"
+                    />
+                  </div>
+                </section>
+
+                <section className="space-y-3 border-t-2 border-border pt-5">
+                  <p className="font-display text-base">Reset data</p>
+                  {confirm === null ? (
                 <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
@@ -292,7 +376,9 @@ export function SettingsDialog({
                   </div>
                 </div>
               )}
-            </section>
+                </section>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </DialogContent>
       </Dialog>

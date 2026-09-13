@@ -93,6 +93,76 @@ export function fromKey(key: string) {
   return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
+/** Yesterday's date key relative to `key`. */
+export function previousDayKey(key: string) {
+  const d = fromKey(key);
+  d.setDate(d.getDate() - 1);
+  return toKey(d);
+}
+
+const GREETINGS = ["Hi", "Hello", "Hey"];
+
+/**
+ * Hero greeting. The opener rotates by day so it stays stable all day
+ * and changes tomorrow.
+ */
+export function greetingFor(dateKey: string, name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return "Stack tasks in your till.";
+  const d = fromKey(dateKey);
+  const dayIndex = Math.floor(
+    (Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(d.getFullYear(), 0, 1)) /
+      86_400_000,
+  );
+  const opener = GREETINGS[((dayIndex % GREETINGS.length) + GREETINGS.length) % GREETINGS.length]!;
+  return `${opener} ${trimmed}! Let's stack tasks in your till.`;
+}
+
+/** IDs of unfinished tasks dated `fromDate` — the ones a carry-over moves. */
+export function carryOverIds(tasks: Task[], fromDate: string) {
+  return tasks.filter((t) => !t.done && t.date === fromDate).map((t) => t.id);
+}
+
+export const CARRY_OVER_KEY = "tillytasky.carryover.v1";
+
+type CarryOverState = { auto: boolean; lastRun: string | null };
+
+/** "Move yesterday's tasks to today" preference, stored in the browser. */
+export function useCarryOver(storageKey: string | null) {
+  const [state, setState] = useState<CarryOverState>({ auto: false, lastRun: null });
+
+  useEffect(() => {
+    if (!storageKey || typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) setState(JSON.parse(raw) as CarryOverState);
+      else setState({ auto: false, lastRun: null });
+    } catch {
+      setState({ auto: false, lastRun: null });
+    }
+  }, [storageKey]);
+
+  const persist = useCallback(
+    (next: CarryOverState) => {
+      setState(next);
+      if (storageKey && typeof window !== "undefined")
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+    },
+    [storageKey],
+  );
+
+  return {
+    auto: state.auto,
+    lastRun: state.lastRun,
+    ready: Boolean(storageKey),
+    setAuto: useCallback((auto: boolean) => persist({ ...state, auto }), [persist, state]),
+    markRun: useCallback((dateKey: string) => persist({ ...state, lastRun: dateKey }), [
+      persist,
+      state,
+    ]),
+  };
+}
+
 /** "Aug 21, 2026" */
 export function formatDay(key: string) {
   return fromKey(key).toLocaleDateString(undefined, {
