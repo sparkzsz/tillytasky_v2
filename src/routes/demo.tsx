@@ -1,7 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { AppShell } from "@/components/AppShell";
-import { clearDemoData, useDemoCategories, useDemoProfile, useDemoTasks } from "@/lib/demo";
+import {
+  clearDemoData,
+  DEMO_CARRY_OVER_KEY,
+  useDemoCategories,
+  useDemoProfile,
+  useDemoTasks,
+} from "@/lib/demo";
 
 const TITLE = "Demo — TillyTasky";
 const DESCRIPTION = "Explore TillyTasky with sample tasks, no account needed.";
