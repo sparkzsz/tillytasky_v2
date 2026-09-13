@@ -83,6 +83,23 @@ export function AppShell({
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const carry = useCarryOver(carryOverKey);
+
+  const runCarryOver = useCallback(() => {
+    const today = toKey(new Date());
+    const ids = carryOverIds(tasks, previousDayKey(today));
+    if (ids.length > 0) moveTasksToDate(ids, today);
+    carry.markRun(today);
+    return ids.length;
+  }, [tasks, moveTasksToDate, carry]);
+
+  useEffect(() => {
+    if (!tasksApi.hydrated || !carry.auto) return;
+    const today = toKey(new Date());
+    if (carry.lastRun === today) return;
+    runCarryOver();
+  }, [tasksApi.hydrated, carry.auto, carry.lastRun, runCarryOver]);
+
   const needsOnboarding =
     !cats.loading && !cats.error && cats.categories.length === 0 && !setupDone;
 
