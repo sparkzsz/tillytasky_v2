@@ -66,6 +66,9 @@ export function SettingsDialog({
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
+  carryOverAuto,
+  onCarryOverAutoChange,
+  onCarryOverNow,
   open: controlledOpen,
   onOpenChange,
 }: Props) {
