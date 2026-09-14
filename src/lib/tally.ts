@@ -545,20 +545,24 @@ export type LogoVariant =
   | "purple"
   | "green"
   | "orange"
-  | "dark-purple";
+  | "dark-purple"
+  | "teal"
+  | "pnb";
 
 export const LOGO_OPTIONS: { value: LogoVariant; label: string; src: string }[] = [
   { value: "default", label: "Default", src: "/tillytasky_logo_default.png" },
   { value: "peach", label: "Peach", src: "/tillytasky_logo_peach.png" },
   { value: "pink", label: "Pink", src: "/tillytasky_logo_pink.png" },
   { value: "purple", label: "Purple", src: "/tillytasky_logo_purple.png" },
-  { value: "green", label: "Green", src: "/tillytasky_logo_green.png" },
+  { value: "green", label: "Mint", src: "/tillytasky_logo_green.png" },
   { value: "orange", label: "Orange", src: "/tillytasky_logo_orange.png" },
   {
     value: "dark-purple",
-    label: "Dark purple",
+    label: "Plum",
     src: "/tillytasky_logo_dark_purple.png",
   },
+  { value: "teal", label: "Teal", src: "/tillytasky_logo_teal.png" },
+  { value: "pnb", label: "P&B", src: "/tillytasky_logo_P&B.png" },
 ];
 
 export function logoSrc(variant: LogoVariant) {
