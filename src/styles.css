@@ -58,6 +58,8 @@
   --color-night: var(--night);
   --color-peaches: var(--peaches);
   --color-poppy: var(--poppy);
+  --color-sprout: var(--sprout);
+  --color-evergreen: var(--evergreen);
   --color-sage: var(--sage);
   --color-fuchsia: var(--fuchsia);
   --color-pool: var(--pool);
@@ -79,6 +81,8 @@
   --night: #252d45;
   --peaches: #fbb28b;
   --poppy: #f76f54;
+  --sprout: #ddf2b8;
+  --evergreen: #037f71;
   --sage: #a9af94;
   --fuchsia: #ea5e86;
   --pool: #47b5a8;
