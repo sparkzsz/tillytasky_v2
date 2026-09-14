@@ -39,6 +39,9 @@ export const CATEGORY_COLORS: (CategoryStyle & { hex: string; label: string })[]
   { hex: "#A3C1E2", label: "Skies", chip: "bg-skies text-night", dot: "bg-skies", chart: "var(--skies)" },
   { hex: "#FBB28B", label: "Peaches", chip: "bg-peaches text-night", dot: "bg-peaches", chart: "var(--peaches)" },
   { hex: "#F76F54", label: "Poppy", chip: "bg-poppy text-night", dot: "bg-poppy", chart: "var(--poppy)" },
+  { hex: "#F7E289", label: "Daffodil", chip: "bg-daffodil text-night", dot: "bg-daffodil", chart: "var(--daffodil)" },
+  { hex: "#DDF2B8", label: "Sprout", chip: "bg-sprout text-night", dot: "bg-sprout", chart: "var(--sprout)" },
+  { hex: "#037F71", label: "Evergreen", chip: "bg-evergreen text-daffodil", dot: "bg-evergreen", chart: "var(--evergreen)" },
   { hex: "#A9AF94", label: "Sage", chip: "bg-sage text-night", dot: "bg-sage", chart: "var(--sage)" },
   { hex: "#EA5E86", label: "Fuchsia", chip: "bg-fuchsia text-night", dot: "bg-fuchsia", chart: "var(--fuchsia)" },
   { hex: "#47B5A8", label: "Pool", chip: "bg-pool text-night", dot: "bg-pool", chart: "var(--pool)" },
@@ -535,13 +538,27 @@ export function useDisplayName(userId: string | undefined) {
 
 const LOGO_KEY = "tillytasky.logo.v1";
 
-export type LogoVariant = "default" | "peach" | "pink" | "purple";
+export type LogoVariant =
+  | "default"
+  | "peach"
+  | "pink"
+  | "purple"
+  | "green"
+  | "orange"
+  | "dark-purple";
 
 export const LOGO_OPTIONS: { value: LogoVariant; label: string; src: string }[] = [
   { value: "default", label: "Default", src: "/tillytasky_logo_default.png" },
   { value: "peach", label: "Peach", src: "/tillytasky_logo_peach.png" },
   { value: "pink", label: "Pink", src: "/tillytasky_logo_pink.png" },
   { value: "purple", label: "Purple", src: "/tillytasky_logo_purple.png" },
+  { value: "green", label: "Green", src: "/tillytasky_logo_green.png" },
+  { value: "orange", label: "Orange", src: "/tillytasky_logo_orange.png" },
+  {
+    value: "dark-purple",
+    label: "Dark purple",
+    src: "/tillytasky_logo_dark_purple.png",
+  },
 ];
 
 export function logoSrc(variant: LogoVariant) {
