@@ -68,6 +68,8 @@ type Props = {
   demo?: boolean;
   /** localStorage key holding the "move yesterday's tasks" preference. */
   carryOverKey: string;
+  /** localStorage key holding the "random till color" preference. */
+  randomLogoKey: string;
   onExit: () => void;
 };
 
