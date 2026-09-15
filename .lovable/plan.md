@@ -3,29 +3,50 @@
 ## Goal
 Play a soft chime sound every time a user completes a task, in both authenticated (`/app`) and demo (`/demo`) mode.
 
-## Plan
+## Sound generation options
 
-1. **Audio asset**
-   - Add the user’s chosen audio file to `public/sounds/complete.mp3` (or `.wav`).
-   - If the user does not have a file ready, I’ll add a small generated/placeholder chime and note how to swap it.
+Lovable does not have a built-in sound effect generator. To generate audio, we have two paths:
 
-2. **Play utility**
-   - Create a small client-safe helper (`src/lib/sounds.ts`) that:
-     - Loads `/sounds/complete.mp3` into an `HTMLAudioElement`.
-     - Plays the sound on task completion.
-     - Catches play errors (e.g. browser autoplay blocked before first interaction).
-     - Respects the user’s system reduced-motion preference.
+1. **ElevenLabs connector (recommended)**
+   - Connect ElevenLabs via Lovable connectors.
+   - The app calls ElevenLabs' sound generation API with a prompt like "soft success chime".
+   - Returns a short MP3 that plays on completion.
 
-3. **Wire into completion**
-   - Trigger the sound from the task completion toggle in both `AppShell` (Today tab) and `TaskTable` (Tasks tab), so completing a task anywhere plays the chime.
-   - Avoid playing when a task is being unchecked or when a bulk operation completes many tasks at once (sound only on individual "complete" action).
+2. **Upload your own audio file**
+   - You provide a short MP3/WAV file.
+   - I place it in `public/sounds/complete.mp3` and play it directly.
 
-4. **Demo mode support**
-   - Use the same public asset and helper in `demo.tsx`, so demo users hear it too.
+## Recommended plan
+
+Given you want a generated sound, I recommend **ElevenLabs**:
+
+1. **Connect ElevenLabs**
+   - Link an ElevenLabs account via Lovable connectors.
+   - The app will use `ELEVENLABS_API_KEY` server-side.
+
+2. **Create sound generation endpoint**
+   - Add a TanStack Start server route (`/api/complete-sound`) that calls ElevenLabs' sound generation API.
+   - Cache the generated audio locally (e.g. in `public/sounds/generated-complete.mp3`) to avoid regenerating on every completion.
+
+3. **Play utility**
+   - Create a small client-safe helper (`src/lib/sounds.ts`) that plays the cached/generated audio.
+   - Handles autoplay restrictions and reduced-motion preferences.
+
+4. **Wire into completion**
+   - Trigger the sound when a task is marked complete in both `AppShell` (Today tab) and `TaskTable` (Tasks tab).
+   - Works in both `/app` and `/demo` modes.
 
 5. **Verification**
    - Build passes.
-   - Browser check: complete a task in demo mode and confirm the chime plays (or at least that no console errors occur if autoplay is blocked).
+   - Browser check: complete a task and confirm the chime plays.
+
+## Fallback: upload your own file
+
+If you'd rather not connect ElevenLabs, upload a short MP3/WAV file (ideally 1–2 seconds) and I'll wire it up the same way using a static file in `public/sounds/`.
 
 ## What I need from you
-Please upload the soft chime file you’d like to use (MP3 or WAV, ideally under 1 MB and 1–2 seconds). If you don’t have one yet, I can use a placeholder and you can replace `public/sounds/complete.mp3` later.
+Either:
+- Connect an ElevenLabs account so I can generate the sound, or
+- Upload the audio file you'd like to use.
+
+Which would you prefer?
