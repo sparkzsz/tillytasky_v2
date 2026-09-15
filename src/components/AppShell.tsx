@@ -15,8 +15,10 @@ import {
   greetingFor,
   logoSrc,
   previousDayKey,
+  randomLogoFor,
   toKey,
   useCarryOver,
+  useRandomLogo,
   type Category,
   type LogoVariant,
   type Task,
@@ -66,6 +68,8 @@ type Props = {
   demo?: boolean;
   /** localStorage key holding the "move yesterday's tasks" preference. */
   carryOverKey: string;
+  /** localStorage key holding the "random till color" preference. */
+  randomLogoKey: string;
   onExit: () => void;
 };
 
@@ -83,12 +87,23 @@ export function AppShell({
   onLogoChange,
   demo = false,
   carryOverKey,
+  randomLogoKey,
   onExit,
 }: Props) {
   const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } =
     tasksApi;
   const { theme, toggleTheme } = useTheme();
-  const logoSrcUrl = logoSrc(logo);
+  const randomLogo = useRandomLogo(randomLogoKey);
+  const todayKey = toKey(new Date());
+  const effectiveLogo = randomLogo.random ? randomLogoFor(todayKey) : logo;
+  const logoSrcUrl = logoSrc(effectiveLogo);
+  const handleLogoChange = useCallback(
+    (value: LogoVariant) => {
+      if (randomLogo.random) randomLogo.setRandom(false);
+      onLogoChange(value);
+    },
+    [randomLogo, onLogoChange],
+  );
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
@@ -193,8 +208,10 @@ export function AppShell({
               onOpenChange={setSettingsOpen}
               tasks={tasks}
               displayName={displayName}
-              logo={logo}
-              onLogoChange={onLogoChange}
+              logo={effectiveLogo}
+              onLogoChange={handleLogoChange}
+              randomLogo={randomLogo.random}
+              onRandomLogoChange={randomLogo.setRandom}
               onDisplayNameChange={onDisplayNameChange}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
