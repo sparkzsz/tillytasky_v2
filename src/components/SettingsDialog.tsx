@@ -292,6 +292,26 @@ export function SettingsDialog({
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-6 pt-4">
                 <section className="space-y-3">
+                  <p className="font-display text-base">Till color</p>
+                  <p className="text-xs text-muted-foreground">
+                    Picks a different logo color each day. Changes at midnight, your local time.
+                  </p>
+                  <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
+                    <div>
+                      <p className="text-sm font-semibold">Randomize daily</p>
+                      <p className="text-xs text-muted-foreground">
+                        A new till color every day. Tap any color above to turn this off.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={randomLogo}
+                      onCheckedChange={onRandomLogoChange}
+                      aria-label="Randomize till color daily"
+                    />
+                  </div>
+                </section>
+
+                <section className="space-y-3 border-t-2 border-border pt-5">
                   <p className="font-display text-base">Yesterday's tasks</p>
                   <p className="text-xs text-muted-foreground">
                     Unfinished tasks from yesterday move to today. Finished tasks stay put.
@@ -314,7 +334,7 @@ export function SettingsDialog({
                     <div>
                       <p className="text-sm font-semibold">Move automatically</p>
                       <p className="text-xs text-muted-foreground">
-                        Runs once a day, the first time you open TillyTasky.
+                        Runs once a day, the first time you open TillyTasky. Resets at midnight, your local time.
                       </p>
                     </div>
                     <Switch
