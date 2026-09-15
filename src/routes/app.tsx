@@ -54,6 +54,7 @@ function AuthenticatedApp() {
       tasksApi={tasksApi}
       cats={cats}
       carryOverKey={`${CARRY_OVER_KEY}.${session.user.id}`}
+      randomLogoKey={`${LOGO_RANDOM_KEY}.${session.user.id}`}
       displayName={displayName}
       onDisplayNameChange={(value) => void setDisplayName(value)}
       logo={logo}

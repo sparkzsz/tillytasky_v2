@@ -37,6 +37,7 @@ function DemoApp() {
     <AppShell
       demo
       carryOverKey={DEMO_CARRY_OVER_KEY}
+      randomLogoKey={DEMO_LOGO_RANDOM_KEY}
       tasksApi={tasksApi}
       cats={cats}
       displayName={displayName}
