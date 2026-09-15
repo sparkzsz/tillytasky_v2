@@ -87,12 +87,16 @@ export function AppShell({
   onLogoChange,
   demo = false,
   carryOverKey,
+  randomLogoKey,
   onExit,
 }: Props) {
   const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } =
     tasksApi;
   const { theme, toggleTheme } = useTheme();
-  const logoSrcUrl = logoSrc(logo);
+  const randomLogo = useRandomLogo(randomLogoKey);
+  const todayKey = toKey(new Date());
+  const effectiveLogo = randomLogo.random ? randomLogoFor(todayKey) : logo;
+  const logoSrcUrl = logoSrc(effectiveLogo);
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
