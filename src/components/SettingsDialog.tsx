@@ -40,6 +40,8 @@ type Props = {
   displayName: string;
   logo: LogoVariant;
   onLogoChange: (value: LogoVariant) => void;
+  randomLogo: boolean;
+  onRandomLogoChange: (value: boolean) => void;
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;

@@ -4,6 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import {
   clearDemoData,
   DEMO_CARRY_OVER_KEY,
+  DEMO_LOGO_RANDOM_KEY,
   useDemoCategories,
   useDemoProfile,
   useDemoTasks,
