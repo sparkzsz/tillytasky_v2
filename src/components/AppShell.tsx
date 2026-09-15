@@ -97,6 +97,13 @@ export function AppShell({
   const todayKey = toKey(new Date());
   const effectiveLogo = randomLogo.random ? randomLogoFor(todayKey) : logo;
   const logoSrcUrl = logoSrc(effectiveLogo);
+  const handleLogoChange = useCallback(
+    (value: LogoVariant) => {
+      if (randomLogo.random) randomLogo.setRandom(false);
+      onLogoChange(value);
+    },
+    [randomLogo, onLogoChange],
+  );
   const [tab, setTab] = useState("today");
   const [setupDone, setSetupDone] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
@@ -201,8 +208,10 @@ export function AppShell({
               onOpenChange={setSettingsOpen}
               tasks={tasks}
               displayName={displayName}
-              logo={logo}
-              onLogoChange={onLogoChange}
+              logo={effectiveLogo}
+              onLogoChange={handleLogoChange}
+              randomLogo={randomLogo.random}
+              onRandomLogoChange={randomLogo.setRandom}
               onDisplayNameChange={onDisplayNameChange}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
