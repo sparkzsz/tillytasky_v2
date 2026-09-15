@@ -65,6 +65,8 @@ export function SettingsDialog({
   displayName,
   logo,
   onLogoChange,
+  randomLogo,
+  onRandomLogoChange,
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
