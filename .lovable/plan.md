@@ -13,7 +13,7 @@ Behavior is unchanged — it already tracks the day using your device's local da
 New control inside the Advanced dropdown in Settings, above "Yesterday's tasks":
 
 - **Randomize daily** switch. When on, the till picture is picked automatically each day from the existing Till color options, and stays the same all day. It changes at midnight, your local time.
-- While it's on, the Till color section shows a short note that today's color is picked for you, and the picker stays visible with the day's color highlighted. Tapping any option turns the toggle off and keeps that color, so nothing gets stuck.
+- While it's on, the Till color picker stays visible with the day's color highlighted. Tapping any option turns the toggle off and keeps that color, so nothing gets stuck.
 - Turning the toggle off restores the color that was saved before randomizing started.
 - Remembered per person on the device (separately for Demo Mode), so it survives refresh.
 
