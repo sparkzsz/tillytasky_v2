@@ -590,6 +590,51 @@ export function useLogoVariant(userId: string | undefined) {
   return { logo, setLogo, src: logoSrc(logo) };
 }
 
+export const LOGO_RANDOM_KEY = "tillytasky.logorandom.v1";
+
+/** Deterministic logo choice for a given date, rotates daily at local midnight. */
+export function randomLogoFor(dateKey: string) {
+  const d = fromKey(dateKey);
+  const dayIndex = Math.floor(
+    (Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(d.getFullYear(), 0, 1)) /
+      86_400_000,
+  );
+  return LOGO_OPTIONS[((dayIndex % LOGO_OPTIONS.length) + LOGO_OPTIONS.length) % LOGO_OPTIONS.length]!
+    .value;
+}
+
+type RandomLogoState = { random: boolean };
+
+/** "Pick a random till color each day" preference, stored per user in the browser. */
+export function useRandomLogo(storageKey: string | null) {
+  const [state, setState] = useState<RandomLogoState>({ random: false });
+
+  useEffect(() => {
+    if (!storageKey || typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) setState(JSON.parse(raw) as RandomLogoState);
+      else setState({ random: false });
+    } catch {
+      setState({ random: false });
+    }
+  }, [storageKey]);
+
+  const persist = useCallback(
+    (next: RandomLogoState) => {
+      setState(next);
+      if (storageKey && typeof window !== "undefined")
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+    },
+    [storageKey],
+  );
+
+  return {
+    random: state.random,
+    setRandom: useCallback((random: boolean) => persist({ ...state, random }), [persist, state]),
+  };
+}
+
 
 export function countsByDay(tasks: Task[]) {
   const map = new Map<string, number>();
