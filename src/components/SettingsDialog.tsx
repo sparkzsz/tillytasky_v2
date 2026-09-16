@@ -42,6 +42,8 @@ type Props = {
   onLogoChange: (value: LogoVariant) => void;
   randomLogo: boolean;
   onRandomLogoChange: (value: boolean) => void;
+  hideDone: boolean;
+  onHideDoneChange: (value: boolean) => void;
   onDisplayNameChange: (value: string) => void;
   onResetTasks: () => void;
   onResetEverything: () => Promise<void> | void;
@@ -67,6 +69,8 @@ export function SettingsDialog({
   onLogoChange,
   randomLogo,
   onRandomLogoChange,
+  hideDone,
+  onHideDoneChange,
   onDisplayNameChange,
   onResetTasks,
   onResetEverything,
@@ -223,6 +227,24 @@ export function SettingsDialog({
                     <span className="text-xs">{o.label}</span>
                   </button>
                 ))}
+              </div>
+            </section>
+
+            <section className="space-y-3 border-t-2 border-border pt-5">
+              <p className="font-display text-base">Completed tasks</p>
+              <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
+                <div>
+                  <p className="text-sm font-semibold">Auto-hide completed</p>
+                  <p className="text-xs text-muted-foreground">
+                    Completed tasks disappear from your Today list. Your counts and records are
+                    unchanged.
+                  </p>
+                </div>
+                <Switch
+                  checked={hideDone}
+                  onCheckedChange={onHideDoneChange}
+                  aria-label="Auto-hide completed tasks"
+                />
               </div>
             </section>
 
