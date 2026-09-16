@@ -18,6 +18,7 @@ import {
   randomLogoFor,
   toKey,
   useCarryOver,
+  useHideDone,
   useRandomLogo,
   type Category,
   type LogoVariant,
@@ -70,6 +71,8 @@ type Props = {
   carryOverKey: string;
   /** localStorage key holding the "random till color" preference. */
   randomLogoKey: string;
+  /** localStorage key holding the "auto-hide completed tasks" preference. */
+  hideDoneKey: string;
   onExit: () => void;
 };
 
@@ -88,12 +91,14 @@ export function AppShell({
   demo = false,
   carryOverKey,
   randomLogoKey,
+  hideDoneKey,
   onExit,
 }: Props) {
   const { tasks, addTask, toggleTask, removeTask, updateTask, clearTasks, moveTasksToDate } =
     tasksApi;
   const { theme, toggleTheme } = useTheme();
   const randomLogo = useRandomLogo(randomLogoKey);
+  const hideDonePref = useHideDone(hideDoneKey);
   const todayKey = toKey(new Date());
   const effectiveLogo = randomLogo.random ? randomLogoFor(todayKey) : logo;
   const logoSrcUrl = logoSrc(effectiveLogo);
@@ -212,6 +217,8 @@ export function AppShell({
               onLogoChange={handleLogoChange}
               randomLogo={randomLogo.random}
               onRandomLogoChange={randomLogo.setRandom}
+              hideDone={hideDonePref.hideDone}
+              onHideDoneChange={hideDonePref.setHideDone}
               onDisplayNameChange={onDisplayNameChange}
               onResetTasks={clearTasks}
               onResetEverything={handleResetEverything}
@@ -288,6 +295,7 @@ export function AppShell({
             <TodayView
               tasks={tasks}
               categories={cats.names}
+              hideDone={hideDonePref.hideDone}
               onAdd={addTask}
               onToggle={toggleTask}
               onRemove={removeTask}
