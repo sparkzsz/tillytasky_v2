@@ -1,52 +1,19 @@
-# Add a completion sound on task done
+# Auto-hide completed tasks toggle
 
-## Goal
-Play a soft chime sound every time a user completes a task, in both authenticated (`/app`) and demo (`/demo`) mode.
+## What changes
 
-## Sound generation options
+- A new **Auto-hide completed** switch in Settings, placed directly after the **Till color** section.
+- Default is **off** — today's list looks exactly as it does now unless the user turns it on.
+- When on, tasks marked complete disappear from the **Today** tab list. The counters at the top (Today's Till, Yesterday, All-time record) are unchanged, so the tally still counts hidden completions.
+- When off, completed tasks show as they do today (dimmed with a strikethrough).
+- Applies to the Today tab only; the Tasks, Categories, Overview, and Progress views are untouched.
+- Remembered per person on the device (separately for Demo Mode), so it survives refresh — same pattern as the "Randomize daily" and carry-over preferences.
 
-Lovable does not have a built-in sound effect generator. To generate audio, we have two paths:
+## Technical notes
 
-1. **ElevenLabs connector (recommended)**
-   - Connect ElevenLabs via Lovable connectors.
-   - The app calls ElevenLabs' sound generation API with a prompt like "soft success chime".
-   - Returns a short MP3 that plays on completion.
-
-2. **Upload your own audio file**
-   - You provide a short MP3/WAV file.
-   - I place it in `public/sounds/complete.mp3` and play it directly.
-
-## Recommended plan
-
-Given you want a generated sound, I recommend **ElevenLabs**:
-
-1. **Connect ElevenLabs**
-   - Link an ElevenLabs account via Lovable connectors.
-   - The app will use `ELEVENLABS_API_KEY` server-side.
-
-2. **Create sound generation endpoint**
-   - Add a TanStack Start server route (`/api/complete-sound`) that calls ElevenLabs' sound generation API.
-   - Cache the generated audio locally (e.g. in `public/sounds/generated-complete.mp3`) to avoid regenerating on every completion.
-
-3. **Play utility**
-   - Create a small client-safe helper (`src/lib/sounds.ts`) that plays the cached/generated audio.
-   - Handles autoplay restrictions and reduced-motion preferences.
-
-4. **Wire into completion**
-   - Trigger the sound when a task is marked complete in both `AppShell` (Today tab) and `TaskTable` (Tasks tab).
-   - Works in both `/app` and `/demo` modes.
-
-5. **Verification**
-   - Build passes.
-   - Browser check: complete a task and confirm the chime plays.
-
-## Fallback: upload your own file
-
-If you'd rather not connect ElevenLabs, upload a short MP3/WAV file (ideally 1–2 seconds) and I'll wire it up the same way using a static file in `public/sounds/`.
-
-## What I need from you
-Either:
-- Connect an ElevenLabs account so I can generate the sound, or
-- Upload the audio file you'd like to use.
-
-Which would you prefer?
+- `src/lib/tally.ts`: add `HIDE_DONE_KEY = "tillytasky.hidedone.v1"` and a `useHideDone(storageKey)` hook returning `{ hideDone, setHideDone }` backed by localStorage, mirroring `useRandomLogo`.
+- `src/components/AppShell.tsx`: new `hideDoneKey` prop; read the preference and pass `hideDone` / `onHideDoneChange` into both `SettingsDialog` and `TodayView`.
+- `src/components/SettingsDialog.tsx`: new switch row right after Till color with helper copy, e.g. "Completed tasks disappear from your Today list. Your counts and records are unchanged."
+- `src/components/TodayView.tsx`: new optional `hideDone` prop; when true, filter `visible` to exclude `task.done` (filtering only — data is never deleted). Empty-state copy stays as is.
+- `src/routes/app.tsx` passes `${HIDE_DONE_KEY}.${session.user.id}`; `src/routes/demo.tsx` passes `DEMO_HIDE_DONE_KEY` added to `DEMO_KEYS` in `src/lib/demo.ts`.
+- No database, schema, or task-model changes.
