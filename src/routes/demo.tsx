@@ -4,6 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import {
   clearDemoData,
   DEMO_CARRY_OVER_KEY,
+  DEMO_HIDE_DONE_KEY,
   DEMO_LOGO_RANDOM_KEY,
   useDemoCategories,
   useDemoProfile,
@@ -38,6 +39,7 @@ function DemoApp() {
       demo
       carryOverKey={DEMO_CARRY_OVER_KEY}
       randomLogoKey={DEMO_LOGO_RANDOM_KEY}
+      hideDoneKey={DEMO_HIDE_DONE_KEY}
       tasksApi={tasksApi}
       cats={cats}
       displayName={displayName}

@@ -635,6 +635,29 @@ export function useRandomLogo(storageKey: string | null) {
   };
 }
 
+export const HIDE_DONE_KEY = "tillytasky.hidedone.v1";
+
+/** "Auto-hide completed tasks in Today" preference, stored per user in the browser. */
+export function useHideDone(storageKey: string | null) {
+  const [hideDone, setHideDoneState] = useState(false);
+
+  useEffect(() => {
+    if (!storageKey || typeof window === "undefined") return;
+    setHideDoneState(window.localStorage.getItem(storageKey) === "1");
+  }, [storageKey]);
+
+  const setHideDone = useCallback(
+    (next: boolean) => {
+      setHideDoneState(next);
+      if (storageKey && typeof window !== "undefined")
+        window.localStorage.setItem(storageKey, next ? "1" : "0");
+    },
+    [storageKey],
+  );
+
+  return { hideDone, setHideDone };
+}
+
 
 export function countsByDay(tasks: Task[]) {
   const map = new Map<string, number>();

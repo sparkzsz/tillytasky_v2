@@ -22,6 +22,7 @@ export const DEMO_CATEGORIES_KEY = "tillytasky.demo.categories.v1";
 export const DEMO_PROFILE_KEY = "tillytasky.demo.profile.v1";
 export const DEMO_CARRY_OVER_KEY = "tillytasky.demo.carryover.v1";
 export const DEMO_LOGO_RANDOM_KEY = "tillytasky.demo.logorandom.v1";
+export const DEMO_HIDE_DONE_KEY = "tillytasky.demo.hidedone.v1";
 
 const DEMO_KEYS = [
   DEMO_TASKS_KEY,
@@ -29,6 +30,7 @@ const DEMO_KEYS = [
   DEMO_PROFILE_KEY,
   DEMO_CARRY_OVER_KEY,
   DEMO_LOGO_RANDOM_KEY,
+  DEMO_HIDE_DONE_KEY,
 ];
 
 /** Wipes the demo session so a later visit starts from the sample data again. */
