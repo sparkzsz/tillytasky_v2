@@ -231,24 +231,6 @@ export function SettingsDialog({
             </section>
 
             <section className="space-y-3 border-t-2 border-border pt-5">
-              <p className="font-display text-base">Completed tasks</p>
-              <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
-                <div>
-                  <p className="text-sm font-semibold">Auto-hide completed</p>
-                  <p className="text-xs text-muted-foreground">
-                    Completed tasks disappear from your Today list. Your counts and records are
-                    unchanged.
-                  </p>
-                </div>
-                <Switch
-                  checked={hideDone}
-                  onCheckedChange={onHideDoneChange}
-                  aria-label="Auto-hide completed tasks"
-                />
-              </div>
-            </section>
-
-            <section className="space-y-3 border-t-2 border-border pt-5">
               <p className="font-display text-base">Export data</p>
               <div className="space-y-2">
                 <Label htmlFor="export-range" className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -314,21 +296,19 @@ export function SettingsDialog({
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-6 pt-4">
                 <section className="space-y-3">
-                  <p className="font-display text-base">Till color</p>
-                  <p className="text-xs text-muted-foreground">
-                    Picks a different logo color each day. Changes at midnight, your local time.
-                  </p>
+                  <p className="font-display text-base">Completed tasks</p>
                   <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
                     <div>
-                      <p className="text-sm font-semibold">Randomize daily</p>
+                      <p className="text-sm font-semibold">Auto-hide completed</p>
                       <p className="text-xs text-muted-foreground">
-                        A new till color every day. Tap any color above to turn this off.
+                        Completed tasks disappear from your Today list. Your counts and records are
+                        unchanged.
                       </p>
                     </div>
                     <Switch
-                      checked={randomLogo}
-                      onCheckedChange={onRandomLogoChange}
-                      aria-label="Randomize till color daily"
+                      checked={hideDone}
+                      onCheckedChange={onHideDoneChange}
+                      aria-label="Auto-hide completed tasks"
                     />
                   </div>
                 </section>
@@ -363,6 +343,26 @@ export function SettingsDialog({
                       checked={carryOverAuto}
                       onCheckedChange={onCarryOverAutoChange}
                       aria-label="Move yesterday's tasks automatically"
+                    />
+                  </div>
+                </section>
+
+                <section className="space-y-3 border-t-2 border-border pt-5">
+                  <p className="font-display text-base">Till color</p>
+                  <p className="text-xs text-muted-foreground">
+                    Picks a different logo color each day. Changes at midnight, your local time.
+                  </p>
+                  <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-border p-3">
+                    <div>
+                      <p className="text-sm font-semibold">Randomize daily</p>
+                      <p className="text-xs text-muted-foreground">
+                        A new till color every day. Tap any color above to turn this off.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={randomLogo}
+                      onCheckedChange={onRandomLogoChange}
+                      aria-label="Randomize till color daily"
                     />
                   </div>
                 </section>
