@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 type Props = {
   tasks: Task[];
   categories: Category[];
+  /** When true, completed tasks are hidden from the list. */
+  hideDone?: boolean;
   onAdd: (
     title: string,
     category: Category,
@@ -42,7 +44,7 @@ type Props = {
   ) => void;
 };
 
-export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpdate }: Props) {
+export function TodayView({ tasks, categories, hideDone = false, onAdd, onToggle, onRemove, onUpdate }: Props) {
   const [filter, setFilter] = useState<Category | "all">("all");
   const [editing, setEditing] = useState<Task | null>(null);
   const today = toKey(new Date());
@@ -51,7 +53,8 @@ export function TodayView({ tasks, categories, onAdd, onToggle, onRemove, onUpda
     () => sortTasksByCategory(tasks.filter((t) => t.date === today), categories),
     [tasks, today, categories],
   );
-  const visible = filter === "all" ? todays : todays.filter((t) => t.category === filter);
+  const filtered = filter === "all" ? todays : todays.filter((t) => t.category === filter);
+  const visible = hideDone ? filtered.filter((t) => !t.done) : filtered;
   const completed = todays.filter((t) => t.done).length;
 
   const yesterdayKey = useMemo(() => {
